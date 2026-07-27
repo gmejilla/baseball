@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Super Stadium Baseball Scorekeeper v1.0.1</title>
+  <title>Super Stadium Baseball Scorekeeper v1.0.7</title>
   <style>
     :root{
       --red:#e21a12;
@@ -1371,7 +1371,7 @@
     }
 
 
-/* v1.0.3 — embedded transparent logo */
+/* v1.0.7 — embedded transparent logo */
 .logo {
   position: relative !important;
   width: min(510px, 42vw) !important;
@@ -1521,7 +1521,7 @@
 
 
 
-    /* v1.0.1 — arcade count panel */
+    /* v1.0.7 — arcade count panel */
     .count-panel{
       padding:0;
       overflow:hidden;
@@ -1673,7 +1673,7 @@
     }
 
 
-    /* v1.0.1 — horizontal pitch controls above Play By Play */
+    /* v1.0.7 — horizontal pitch controls above Play By Play */
     .pitch-control-section{
       margin-top:18px;
       padding:14px;
@@ -1700,7 +1700,7 @@
     }
 
 
-    /* v1.0.1 — compact field height to eliminate empty side-panel space */
+    /* v1.0.7 — compact field height to eliminate empty side-panel space */
     @media (min-width:1001px){
       .field-wrap{
         min-height:430px !important;
@@ -1734,6 +1734,105 @@
         bottom:28px !important;
       }
     }
+
+
+    /* v1.0.7 — align bases with the diamond corners */
+    @media (min-width:1001px){
+      .base.first{
+        right:44px !important;
+        top:218px !important;
+      }
+
+      .base.second{
+        top:58px !important;
+      }
+
+      .base.third{
+        left:44px !important;
+        top:218px !important;
+      }
+    }
+
+
+    /* v1.0.7 — move 1st and 3rd bases inward toward the infield */
+    @media (min-width:1001px){
+      .base.first{
+        right:62px !important;
+        top:218px !important;
+      }
+
+      .base.third{
+        left:62px !important;
+        top:218px !important;
+      }
+    }
+
+
+    /* v1.0.7 — geometrically anchor all bases to the green infield corners */
+    @media (min-width:1001px){
+      /*
+        Desktop field geometry:
+        field = 330px square, rotated 45deg
+        green infield = 220px square (55px inset)
+        corner radius = 220 / sqrt(2) = 155.56px
+        field center is 26.4px below the field-wrap midpoint
+      */
+      .base.first{
+        right:calc(50% - 174.56px) !important;
+        top:calc(50% + 7.4px) !important;
+      }
+
+      .base.second{
+        left:50% !important;
+        top:calc(50% - 148.16px) !important;
+        transform:translateX(-50%) rotate(45deg) !important;
+      }
+
+      .base.third{
+        left:calc(50% - 174.56px) !important;
+        top:calc(50% + 7.4px) !important;
+      }
+
+      .home-plate{
+        left:50% !important;
+        bottom:15px !important;
+        transform:translateX(-50%) !important;
+      }
+    }
+
+
+/* v1.0.7 — reduce top padding above the field */
+@media (min-width:1001px){
+  .field-wrap{
+    padding-top:8px !important;
+    margin-top:0 !important;
+  }
+  .center-panel,
+  .field-panel{
+    padding-top:8px !important;
+  }
+}
+
+
+/* v1.0.7 — minimize top space above .hero */
+.hero{
+  margin-top:0 !important;
+  padding-top:4px !important;
+}
+body>.hero:first-child,
+.hero:first-child{
+  margin-top:0 !important;
+}
+
+
+/* v1.0.7 — shift logo layer 20% to the right */
+.brand-box,
+.logo-layer,
+.brand,
+.hero-logo,
+.logo{
+  transform: translateX(20%) !important;
+}
 
 </style>
 </head>
