@@ -2043,21 +2043,21 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.62 Final score styling */
+/* v1.0.66 Final score styling */
 .final-team-score{
   background:#000 !important;
   color:#fff !important;
 }
 
 
-/* v1.0.62 Final score styling */
+/* v1.0.66 Final score styling */
 .final-team-score{
   background:#fff !important;
   color:#000 !important;
 }
 
 
-/* v1.0.62 remove glow from final score */
+/* v1.0.66 remove glow from final score */
 .final-team-score,
 .final-team-score *,
 #finalAwayScore,
@@ -2065,6 +2065,66 @@ button:not(:disabled).is-pressed{
   text-shadow:none !important;
   box-shadow:none !important;
   filter:none !important;
+}
+
+
+/* v1.0.66 active batting-team scoreboard row */
+.score-team-row > td,
+.score-team-row .team-name,
+.score-team-row .inning-input{
+  transition:background-color .25s ease, color .25s ease;
+}
+
+.score-team-row.batting-active > td,
+.score-team-row.batting-active .team-name,
+.score-team-row.batting-active .inning-input{
+  background:#ffe79a !important;
+}
+
+.score-team-row.batting-active > td{
+  box-shadow:inset 0 2px 0 rgba(130,84,0,.28),
+             inset 0 -2px 0 rgba(130,84,0,.28);
+}
+
+
+/* v1.0.66 don't highlight team name cell/icon */
+.score-team-row.batting-active > td:first-child,
+.score-team-row.batting-active > td:first-child .team-name{
+  background:inherit !important;
+  box-shadow:none !important;
+}
+
+
+/* v1.0.66 start batting highlight after logo area */
+.score-team-row.batting-active .team-name{
+  background:transparent !important;
+  background-image:linear-gradient(to right,
+    transparent 0,
+    transparent 42px,
+    #ffe79a 42px,
+    #ffe79a 100%) !important;
+  box-shadow:none !important;
+}
+.score-team-row.batting-active>td:first-child{
+  background:transparent !important;
+}
+
+
+/* v1.0.66: batting highlight begins after the complete team-name box */
+.score-team-row.batting-active > td:first-child,
+.score-team-row.batting-active > td:first-child .team-name,
+.score-team-row.batting-active .team-name{
+  background:initial !important;
+  background-image:none !important;
+  box-shadow:var(--bevel) !important;
+}
+
+.score-team-row.batting-active #awayName{
+  background:linear-gradient(#6939bc,#332078) !important;
+}
+
+.score-team-row.batting-active #homeName{
+  background:linear-gradient(#f62822,#a40c08) !important;
 }
 
 </style>
@@ -2115,12 +2175,12 @@ button:not(:disabled).is-pressed{
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr id="awayScoreRow" class="score-team-row">
           <td class="team-cell"><input id="awayName" class="team-name" value="VISITOR" maxlength="18"></td>
           <td id="awayInningsCell" colspan="9" style="padding:0"><div id="awayInnings" style="display:grid;grid-template-columns:repeat(9,1fr);height:100%"></div></td>
           <td id="awayR" class="total-cell">0</td><td id="awayH" class="total-cell">0</td><td id="awayHR" class="total-cell">0</td><td id="awayTD" class="total-cell">0</td>
         </tr>
-        <tr>
+        <tr id="homeScoreRow" class="score-team-row">
           <td class="team-cell"><input id="homeName" class="team-name" value="HOME" maxlength="18"></td>
           <td id="homeInningsCell" colspan="9" style="padding:0"><div id="homeInnings" style="display:grid;grid-template-columns:repeat(9,1fr);height:100%"></div></td>
           <td id="homeR" class="total-cell">0</td><td id="homeH" class="total-cell">0</td><td id="homeHR" class="total-cell">0</td><td id="homeTD" class="total-cell">0</td>
@@ -2875,6 +2935,11 @@ button:not(:disabled).is-pressed{
     const homeNameInput=$('#homeName');
     const awayHeroLabel=$('#awayHeroName');
     const homeHeroLabel=$('#homeHeroName');
+    const awayScoreRow=$('#awayScoreRow');
+    const homeScoreRow=$('#homeScoreRow');
+
+    if(awayScoreRow)awayScoreRow.classList.toggle('batting-active',!state.gameOver && state.half==='top');
+    if(homeScoreRow)homeScoreRow.classList.toggle('batting-active',!state.gameOver && state.half==='bottom');
 
     [awayNameInput,homeNameInput,awayHeroLabel,homeHeroLabel].forEach(el=>{
       if(el)el.classList.remove('active-batting');
