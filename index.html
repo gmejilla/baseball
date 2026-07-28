@@ -602,7 +602,7 @@
     .hr-banner{
       position:fixed;left:50%;top:22%;
       transform:translate(-50%,-50%) scale(.5);
-      opacity:0;z-index:110;
+      opacity:0;z-index:13050;
       min-width:300px;
       padding:20px 30px;
       text-align:center;
@@ -683,7 +683,7 @@
       top:22%;
       transform:translate(-50%,-50%) scale(.55);
       opacity:0;
-      z-index:110;
+      z-index:13050;
       min-width:270px;
       padding:18px 28px;
       text-align:center;
@@ -713,7 +713,7 @@
       opacity:0;transition:.25s;
       background:#000;border:4px solid #ffe12e;
       border-radius:10px;padding:12px 20px;
-      z-index:120;font-size:20px;
+      z-index:13050;font-size:20px;
     }
     .toast.show{transform:translate(-50%,0);opacity:1}
 
@@ -2043,21 +2043,21 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.72 Final score styling */
+/* v2 Final score styling */
 .final-team-score{
   background:#000 !important;
   color:#fff !important;
 }
 
 
-/* v1.0.72 Final score styling */
+/* v2 Final score styling */
 .final-team-score{
   background:#fff !important;
   color:#000 !important;
 }
 
 
-/* v1.0.72 remove glow from final score */
+/* v2 remove glow from final score */
 .final-team-score,
 .final-team-score *,
 #finalAwayScore,
@@ -2068,7 +2068,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.72 active batting-team scoreboard row */
+/* v2 active batting-team scoreboard row */
 .score-team-row > td,
 .score-team-row .team-name,
 .score-team-row .inning-input{
@@ -2087,7 +2087,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.72 don't highlight team name cell/icon */
+/* v2 don't highlight team name cell/icon */
 .score-team-row.batting-active > td:first-child,
 .score-team-row.batting-active > td:first-child .team-name{
   background:inherit !important;
@@ -2095,7 +2095,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.72 start batting highlight after logo area */
+/* v2 start batting highlight after logo area */
 .score-team-row.batting-active .team-name{
   background:transparent !important;
   background-image:linear-gradient(to right,
@@ -2110,7 +2110,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.72: batting highlight begins after the complete team-name box */
+/* v2: batting highlight begins after the complete team-name box */
 .score-team-row.batting-active > td:first-child,
 .score-team-row.batting-active > td:first-child .team-name,
 .score-team-row.batting-active .team-name{
@@ -2128,7 +2128,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.72 inning buttons */
+/* v2 inning buttons */
 .innings-options{
   display:grid !important;
   grid-template-columns:repeat(4,1fr) !important;
@@ -2152,6 +2152,63 @@ button:not(:disabled).is-pressed{
 .innings-options .innings-choice:nth-child(4){
   background:#d93a35 !important;
   color:#fff !important;
+}
+
+
+/* Baseball LED ribbon hit overlay — v2 */
+.led-ribbon-overlay{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .12s ease, visibility 0s linear .12s;
+}
+.led-ribbon-overlay.is-visible{
+  opacity:1;
+  visibility:visible;
+  transition:opacity .12s ease;
+}
+.led-ribbon-overlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.38);
+  backdrop-filter:blur(1.5px);
+}
+.led-ribbon-popup{
+  position:relative;
+  width:min(1180px,96vw);
+  transform:translateY(10px) scale(.985);
+  transition:transform .18s ease;
+  filter:drop-shadow(0 18px 42px rgba(0,0,0,.55));
+}
+.led-ribbon-overlay.is-visible .led-ribbon-popup{
+  transform:translateY(0) scale(1);
+}
+.led-ribbon-popup baseball-led-ribbon{
+  width:100%;
+}
+@media(max-width:700px){
+  .led-ribbon-overlay{padding:8px}
+  .led-ribbon-popup{width:98vw}
+}
+
+
+/* Keep scoring banners visible when reduced-motion is enabled. */
+@media (prefers-reduced-motion: reduce){
+  .run-banner,
+  .hr-banner,
+  .hr-banner.grand-slam{
+    animation:none !important;
+    opacity:1 !important;
+    transform:translate(-50%,-50%) scale(1) !important;
+  }
 }
 
 </style>
@@ -2402,6 +2459,17 @@ button:not(:disabled).is-pressed{
 
 <div class="fireworks" id="fireworks"></div>
 <div class="toast" id="toast"></div>
+
+
+<div class="led-ribbon-overlay" id="ledRibbonOverlay" aria-hidden="true">
+  <div class="led-ribbon-popup">
+    <baseball-led-ribbon
+      id="resultRibbon"
+      asset-base="./baseball-led-ribbon/assets/"
+      min-height="120">
+    </baseball-led-ribbon>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -2753,12 +2821,13 @@ button:not(:disabled).is-pressed{
       text=scored===4
         ? 'Grand Slam Home Run! 4 runs score!'
         : `${scored===1?'Solo ':scored+'-Run '}Home Run! ${scored} run${scored===1?'':'s'} score!`;
-      showHomeRun(scored);
+      scheduleRunResultPopup('homeRun',scored);
     }else if(scored>0){
-      showRunScored(scored);
+      scheduleRunResultPopup('run',scored);
     }
 
     playActionSound(type,scored);
+    showLedHitRibbon(type);
     clearCount();
     logPlay(text);
     render();
@@ -2884,6 +2953,7 @@ button:not(:disabled).is-pressed{
     if(gameIsLocked())return;
     saveHistory();
     const scored=advanceExistingRunners(spaces);
+    if(scored>0) showRunScored(scored);
     logPlay(`Runners advance ${spaces} base${spaces===1?'':'s'}.${scored?` ${scored} run${scored===1?'':'s'} score.`:''}`);
     render();
   }
@@ -2894,6 +2964,7 @@ button:not(:disabled).is-pressed{
     const scored=state.bases.filter(Boolean).length;
     if(scored)addRuns(scored);
     state.bases=[false,false,false];
+    if(scored>0) showRunScored(scored);
     logPlay(`${scored||'No'} runner${scored===1?'':'s'} scored manually.`);
     render();
   }
@@ -3225,6 +3296,8 @@ button:not(:disabled).is-pressed{
   function showRunScored(runs){
     const banner=document.createElement('div');
     banner.className='run-banner';
+    banner.style.opacity='1';
+    banner.style.zIndex='13050';
     banner.innerHTML=`<div class="big">RUN SCORED!</div><div class="sub">${runs} RUN${runs===1?'':'S'} SCORED</div>`;
     document.body.appendChild(banner);
     setTimeout(()=>banner.remove(),1700);
@@ -3234,6 +3307,8 @@ button:not(:disabled).is-pressed{
     const isGrandSlam=runs===4;
     const banner=document.createElement('div');
     banner.className=`hr-banner${isGrandSlam?' grand-slam':''}`;
+    banner.style.opacity='1';
+    banner.style.zIndex='13050';
 
     let title='HOME RUN!';
     let subtitle='SOLO HOME RUN';
@@ -3719,6 +3794,341 @@ function playRandomBaseballCharge(){
     selected.currentTime=0;
     selected.play().catch(()=>{});
   }catch(e){}
+}
+</script>
+
+
+<script>
+class BaseballLedRibbon extends HTMLElement {
+  static get observedAttributes(){ return ['asset-base','min-height']; }
+
+  constructor(){
+    super();
+    this.attachShadow({mode:'open'});
+    this._animations=[];
+    this._token=0;
+    this._readyPromise=null;
+    this._assetBase='';
+    this._render();
+  }
+
+  connectedCallback(){
+    this._assetBase=this.getAttribute('asset-base') || './baseball-led-ribbon/assets/';
+    if(!this._assetBase.endsWith('/')) this._assetBase += '/';
+    this._applyMinHeight();
+    this._readyPromise=this._preload();
+    this._resizeObserver=new ResizeObserver(()=>this._cacheSize());
+    this._resizeObserver.observe(this._board);
+  }
+
+  disconnectedCallback(){
+    this.destroy();
+  }
+
+  attributeChangedCallback(name){
+    if(name==='min-height') this._applyMinHeight();
+    if(name==='asset-base' && this.isConnected){
+      this._assetBase=this.getAttribute('asset-base') || './baseball-led-ribbon/assets/';
+      if(!this._assetBase.endsWith('/')) this._assetBase += '/';
+      this._readyPromise=this._preload();
+    }
+  }
+
+  get ready(){ return this._readyPromise || Promise.resolve(); }
+
+  async play(type){
+    const valid=['single','double','triple','homerun','walk','strikeout','out'];
+    if(!valid.includes(type)) throw new Error(`Unsupported animation: ${type}`);
+    await this.ready;
+    this._cancelAll();
+    const token=this._token;
+    this._cacheSize();
+    this._resetVisuals();
+    this.dispatchEvent(new CustomEvent('animationstart',{detail:{type}}));
+
+    if(type==='walk') await this._playWalk(token);
+    else if(type==='strikeout') await this._playStrikeout(token);
+    else await this._playHit(type,token);
+
+    if(token===this._token){
+      this.dispatchEvent(new CustomEvent('animationend',{detail:{type}}));
+    }
+  }
+
+  reset(){
+    this._cancelAll();
+    this._resetVisuals();
+  }
+
+  destroy(){
+    this._cancelAll();
+    if(this._resizeObserver) this._resizeObserver.disconnect();
+  }
+
+  _render(){
+    this.shadowRoot.innerHTML=`
+      <style>
+        :host{display:block;width:100%;--single:#ffd52b;--double:#28baff;--triple:#d95cff;--homerun:#ff4435;--walk:#63ff35;--strikeout:#ff9c27;--out:#ff4033}
+        *{box-sizing:border-box}
+        .shell{padding:8px;border:3px solid #303740;border-radius:14px;background:#05070a;box-shadow:0 0 0 3px #0b0e12,inset 0 0 30px #000}
+        .board{position:relative;width:100%;aspect-ratio:16/2.9;min-height:140px;overflow:hidden;border-radius:8px;background:radial-gradient(circle,rgba(21,31,39,.48) 1px,transparent 1.45px),#010203;background-size:7px 7px;contain:strict;isolation:isolate;transform:translateZ(0)}
+        .batter{position:absolute;left:3%;top:10%;height:80%;width:auto;object-fit:contain;opacity:1;transform:translate3d(0,0,0);backface-visibility:hidden;will-change:opacity;pointer-events:none}
+        .ball{position:absolute;left:94%;top:29%;width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.95);opacity:0;transform:translate3d(0,0,0);will-change:transform,opacity;backface-visibility:hidden}
+        .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;will-change:opacity}
+        .burst{position:absolute;left:30.5%;top:42%;width:48px;height:48px;opacity:0;transform:translate3d(-50%,-50%,0) scale(.2);pointer-events:none;will-change:transform,opacity}
+        .burst::before,.burst::after,.burst span::before,.burst span::after{content:"";position:absolute;left:22px;top:0;width:4px;height:48px;background:#fff}
+        .burst::after{transform:rotate(90deg)} .burst span::before{transform:rotate(45deg)} .burst span::after{transform:rotate(-45deg)}
+        .result{--led-color:var(--single);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:translate3d(0,0,0) scale(.86);font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif;font-size:clamp(42px,10vw,126px);font-weight:900;letter-spacing:.06em;line-height:.9;text-align:center;color:transparent;background-image:radial-gradient(circle,var(--led-color) 0 2.1px,rgba(255,255,255,.30) 2.2px 2.7px,transparent 2.8px);background-size:7px 7px;background-position:center;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 4px var(--led-color));will-change:opacity,transform;pointer-events:none;white-space:nowrap}
+        .single{--led-color:var(--single)}.double{--led-color:var(--double)}.triple{--led-color:var(--triple)}.homerun{--led-color:var(--homerun)}.walk{--led-color:var(--walk)}.strikeout{--led-color:var(--strikeout)}.out{--led-color:var(--out)}
+        @media(max-width:700px){.board{min-height:110px}.result{font-size:clamp(34px,10vw,80px)}}
+        @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+      </style>
+      <div class="shell"><div class="board">
+        <img class="batter" alt="">
+        <div class="ball"></div><div class="burst"><span></span></div><div class="flash"></div><div class="result single">SINGLE</div>
+      </div></div>`;
+    this._board=this.shadowRoot.querySelector('.board');
+    this._batter=this.shadowRoot.querySelector('.batter');
+    this._ball=this.shadowRoot.querySelector('.ball');
+    this._burst=this.shadowRoot.querySelector('.burst');
+    this._flash=this.shadowRoot.querySelector('.flash');
+    this._result=this.shadowRoot.querySelector('.result');
+  }
+
+  _applyMinHeight(){
+    if(!this._board) return;
+    const v=this.getAttribute('min-height');
+    if(v) this._board.style.minHeight=/^\d+$/.test(v)?`${v}px`:v;
+  }
+
+  _sprite(name){ return `${this._assetBase}${name}.webp`; }
+  _cacheSize(){ const r=this._board.getBoundingClientRect(); this._w=r.width; this._h=r.height; }
+  _cancelAll(){ this._token++; this._animations.forEach(a=>a.cancel()); this._animations=[]; }
+  _animate(el,keyframes,options){ const a=el.animate(keyframes,{fill:'forwards',...options}); this._animations.push(a); return a.finished.catch(()=>{}); }
+  async _setSprite(name){ if(this._batter.dataset.pose===name)return; this._batter.src=this._sprite(name); this._batter.dataset.pose=name; try{await this._batter.decode()}catch{} }
+
+  async _preload(){
+    const names=['setup','load','swing','contact'];
+    await Promise.all(names.map(name=>new Promise(resolve=>{const img=new Image();img.onload=async()=>{try{await img.decode()}catch{}resolve()};img.onerror=resolve;img.src=this._sprite(name)})));
+    this._batter.src=this._sprite('setup'); this._batter.dataset.pose='setup';
+    this._cacheSize(); this._resetVisuals();
+    this.dispatchEvent(new CustomEvent('ready'));
+  }
+
+  _resetVisuals(){
+    this._result.style.opacity='0';this._result.style.transform='translate3d(0,0,0) scale(.86)';
+    this._batter.style.opacity='1';this._batter.src=this._sprite('setup');this._batter.dataset.pose='setup';
+    this._ball.style.opacity='0';this._ball.style.left='94%';this._ball.style.top='29%';this._ball.style.transform='translate3d(0,0,0)';
+    this._flash.style.opacity='0';this._burst.style.opacity='0';this._burst.style.transform='translate3d(-50%,-50%,0) scale(.2)';
+  }
+
+  async _flashBoard(token){if(token!==this._token)return;await this._animate(this._flash,[{opacity:0},{opacity:1,offset:.28},{opacity:0}],{duration:145,easing:'ease-out'})}
+  async _showResult(type,token){if(token!==this._token)return;const labels={single:'SINGLE',double:'DOUBLE',triple:'TRIPLE',homerun:'HOME RUN',walk:'WALK',strikeout:'STRIKE OUT',out:'OUT'};this._ball.style.opacity='0';this._result.textContent=labels[type];this._result.className=`result ${type}`;await this._animate(this._result,[{opacity:0,transform:'translate3d(0,0,0) scale(.86)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)'}],{duration:150,easing:'cubic-bezier(.2,.8,.2,1)'})}
+
+  async _animatePitch(token){
+    const sx=.94,sy=.29,cx=.30,cy=.43,mx=.58,my=.35;
+    this._ball.style.left=`${sx*100}%`;this._ball.style.top=`${sy*100}%`;this._ball.style.opacity='1';this._ball.style.transform='translate3d(0,0,0)';
+    const mdx=this._w*(mx-sx),mdy=this._h*(my-sy),cdx=this._w*(cx-sx),cdy=this._h*(cy-sy);
+    await this._animate(this._ball,[{transform:'translate3d(0,0,0)',opacity:1},{transform:`translate3d(${mdx}px,${mdy}px,0)`,opacity:1}],{duration:300,easing:'linear'});if(token!==this._token)return false;
+    await this._setSprite('load');
+    await this._animate(this._ball,[{transform:`translate3d(${mdx}px,${mdy}px,0)`,opacity:1},{transform:`translate3d(${cdx}px,${cdy}px,0)`,opacity:1}],{duration:300,easing:'linear'});if(token!==this._token)return false;
+    await this._setSprite('swing');return true;
+  }
+  async _animateContact(token){if(token!==this._token)return;await this._setSprite('contact');this._ball.style.opacity='1';await this._animate(this._burst,[{opacity:0,transform:'translate3d(-50%,-50%,0) scale(.2) rotate(0deg)'},{opacity:1,transform:'translate3d(-50%,-50%,0) scale(1.1) rotate(12deg)',offset:.42},{opacity:0,transform:'translate3d(-50%,-50%,0) scale(1.8) rotate(24deg)'}],{duration:220,easing:'ease-out'})}
+  async _animateFlight(type,token){if(token!==this._token)return;const paths={single:[.58,-.18],double:[.66,-.29],triple:[.72,-.38],homerun:[.76,-.62],out:[.58,.12]};const [xf,yf]=paths[type];this._ball.style.left='30%';this._ball.style.top='43%';this._ball.style.opacity='1';this._ball.style.transform='translate3d(0,0,0)';await this._animate(this._ball,[{transform:'translate3d(0,0,0)',opacity:1},{transform:`translate3d(${this._w*xf*.55}px,${this._h*yf*.35}px,0)`,opacity:1,offset:.5},{transform:`translate3d(${this._w*xf}px,${this._h*yf}px,0)`,opacity:0}],{duration:560,easing:'cubic-bezier(.18,.72,.22,1)'})}
+  async _playHit(type,token){await this._setSprite('setup');if(!(await this._animatePitch(token)))return;await this._animateContact(token);await this._animateFlight(type,token);await this._flashBoard(token);await this._showResult(type,token)}
+  async _playWalk(token){await this._setSprite('setup');this._batter.style.opacity='1';this._ball.style.opacity='1';const ps=[[this._w*.12,-this._h*.05],[this._w*.20,this._h*.08],[this._w*.29,-this._h*.03],[this._w*.38,this._h*.10]];for(const [x,y] of ps){if(token!==this._token)return;this._ball.style.transform='translate3d(0,0,0)';await this._animate(this._ball,[{opacity:0,transform:'translate3d(0,0,0)'},{opacity:1,transform:`translate3d(${x}px,${y}px,0)`,offset:.25},{opacity:0,transform:`translate3d(${x}px,${y}px,0)`}],{duration:210,easing:'linear'})}await this._flashBoard(token);await this._showResult('walk',token)}
+  async _playStrikeout(token){await this._setSprite('setup');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:180});if(token!==this._token)return;await this._setSprite('load');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:190});if(token!==this._token)return;await this._setSprite('swing');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:250});if(token!==this._token)return;await this._flashBoard(token);await this._showResult('strikeout',token)}
+}
+
+if(!customElements.get('baseball-led-ribbon')) customElements.define('baseball-led-ribbon',BaseballLedRibbon);
+
+</script>
+
+<script>
+let ledRibbonHideTimer=0;
+let ledRibbonPlayToken=0;
+let pendingLedPopup=null;
+
+function scheduleRunResultPopup(kind,runs){
+  pendingLedPopup={kind,runs};
+}
+
+function hideLedHitRibbon(){
+  window.clearTimeout(ledRibbonHideTimer);
+  const overlay=document.getElementById('ledRibbonOverlay');
+  const ribbon=document.getElementById('resultRibbon');
+
+  if(overlay){
+    overlay.classList.remove('is-visible');
+    overlay.setAttribute('aria-hidden','true');
+  }
+
+  if(ribbon && typeof ribbon.reset==='function'){
+    window.setTimeout(()=>ribbon.reset(),180);
+  }
+}
+
+async function showLedHitRibbon(hitType){
+  const animationMap={
+    single:'single',
+    double:'double',
+    triple:'triple',
+    hr:'homerun'
+  };
+  const animation=animationMap[hitType];
+  if(!animation) return;
+
+  const overlay=document.getElementById('ledRibbonOverlay');
+  const ribbon=document.getElementById('resultRibbon');
+  const token=++ledRibbonPlayToken;
+
+  if(!overlay || !ribbon || typeof ribbon.play!=='function'){
+    const pending=pendingLedPopup;
+    pendingLedPopup=null;
+    if(pending){
+      if(pending.kind==='homeRun') showHomeRun(pending.runs);
+      else showRunScored(pending.runs);
+    }
+    return;
+  }
+
+  window.clearTimeout(ledRibbonHideTimer);
+  overlay.classList.add('is-visible');
+  overlay.setAttribute('aria-hidden','false');
+
+  try{
+    await ribbon.play(animation);
+  }catch(error){
+    console.warn('LED ribbon animation could not play:',error);
+  }
+
+  if(token!==ledRibbonPlayToken) return;
+
+  await new Promise(resolve=>{
+    ledRibbonHideTimer=window.setTimeout(resolve,500);
+  });
+
+  if(token!==ledRibbonPlayToken) return;
+
+  hideLedHitRibbon();
+
+  // Allow the overlay fade-out to begin, then display the original scoring popup.
+  window.setTimeout(()=>{
+    const pending=pendingLedPopup;
+    pendingLedPopup=null;
+    if(!pending) return;
+
+    if(pending.kind==='homeRun'){
+      showHomeRun(pending.runs);
+    }else{
+      showRunScored(pending.runs);
+    }
+  },180);
+}
+
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape') hideLedHitRibbon();
+});
+</script>
+
+
+<script>
+function createGuaranteedScorePopup(title,subtitle,isHomeRun,isGrandSlam){
+  document.querySelectorAll('.guaranteed-score-popup').forEach(node=>node.remove());
+
+  const popup=document.createElement('div');
+  popup.className='guaranteed-score-popup';
+  popup.setAttribute('role','status');
+  popup.setAttribute('aria-live','assertive');
+
+  Object.assign(popup.style,{
+    position:'fixed',
+    left:'50%',
+    top:'50%',
+    transform:'translate(-50%,-50%) scale(1)',
+    zIndex:'2147483647',
+    display:'flex',
+    flexDirection:'column',
+    alignItems:'center',
+    justifyContent:'center',
+    width:'min(900px,92vw)',
+    minHeight:isHomeRun?'230px':'190px',
+    boxSizing:'border-box',
+    padding:'28px 34px',
+    borderRadius:'24px',
+    border:isGrandSlam?'6px solid #ffd429':'5px solid #ffffff',
+    background:isHomeRun
+      ? 'linear-gradient(180deg,#b50000 0%,#650000 100%)'
+      : 'linear-gradient(180deg,#0756a8 0%,#022f67 100%)',
+    boxShadow:'0 22px 70px rgba(0,0,0,.72), inset 0 0 28px rgba(255,255,255,.16)',
+    color:'#ffffff',
+    textAlign:'center',
+    opacity:'1',
+    visibility:'visible',
+    pointerEvents:'none'
+  });
+
+  const big=document.createElement('div');
+  big.textContent=title;
+  Object.assign(big.style,{
+    fontFamily:'Arial Black, Impact, sans-serif',
+    fontWeight:'900',
+    fontSize:'clamp(42px,8vw,84px)',
+    lineHeight:'1',
+    letterSpacing:'1px',
+    textShadow:'0 4px 0 rgba(0,0,0,.45)'
+  });
+
+  const sub=document.createElement('div');
+  sub.textContent=subtitle;
+  Object.assign(sub.style,{
+    marginTop:'15px',
+    fontFamily:'Arial Black, Impact, sans-serif',
+    fontWeight:'900',
+    fontSize:'clamp(22px,4vw,42px)',
+    color:'#ffe12e',
+    lineHeight:'1.1',
+    textShadow:'0 3px 0 rgba(0,0,0,.4)'
+  });
+
+  popup.append(big,sub);
+  document.body.appendChild(popup);
+
+  try{
+    popup.animate(
+      [
+        {transform:'translate(-50%,-50%) scale(.82)',opacity:0},
+        {transform:'translate(-50%,-50%) scale(1.05)',opacity:1,offset:.32},
+        {transform:'translate(-50%,-50%) scale(1)',opacity:1}
+      ],
+      {duration:360,easing:'ease-out',fill:'forwards'}
+    );
+  }catch(_){}
+
+  window.setTimeout(()=>popup.remove(),isGrandSlam?3000:(isHomeRun?2200:1900));
+}
+
+function showRunScored(runs){
+  createGuaranteedScorePopup(
+    'RUN SCORED!',
+    `${runs} RUN${runs===1?'':'S'} SCORED`,
+    false,
+    false
+  );
+}
+
+function showHomeRun(runs){
+  const isGrandSlam=runs===4;
+  let title='HOME RUN!';
+  let subtitle='SOLO HOME RUN';
+  if(runs===2) subtitle='2-RUN HOME RUN';
+  if(runs===3) subtitle='3-RUN HOME RUN';
+  if(isGrandSlam){
+    title='GRAND SLAM HOME RUN!';
+    subtitle='BASES CLEARED!';
+  }
+  createGuaranteedScorePopup(title,subtitle,true,isGrandSlam);
 }
 </script>
 
