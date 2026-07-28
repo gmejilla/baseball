@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Super Stadium Baseball Scorekeeper v1.0.23</title>
+  <title>Super Stadium Baseball Scorekeeper v1.0.55</title>
   <style>
     :root{
       --red:#e21a12;
@@ -107,7 +107,7 @@
       display:grid;
       grid-template-columns:1fr 120px 1fr;
       align-items:stretch;
-      background:#002d1d;
+      background: #ffffff;
       border:6px solid #174f39;
       border-radius:16px;
       box-shadow:var(--shadow),var(--bevel);
@@ -155,7 +155,7 @@
 
     .scoreboard-shell{
       margin:0 18px 12px;
-      background:#042c1e;
+      background: linear-gradient(#ffffff,#ececec);
       border:6px solid #18513a;
       border-radius:16px;
       box-shadow:var(--shadow),var(--bevel);
@@ -928,7 +928,9 @@
     }
     .innings-cancel{
       width:100%;
-      min-height:36px;
+      height:62px;
+      min-height:62px;
+      padding:0 20px;
       margin-top:18px;
       border:5px solid #fff;
       outline:3px solid #111;
@@ -941,6 +943,7 @@
       box-shadow:0 7px 0 #111;
       cursor:pointer;
       touch-action:manipulation;
+      box-sizing:border-box;
     }
     .innings-cancel:active{
       transform:translateY(4px);
@@ -1084,13 +1087,17 @@
 
     .final-actions{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
+      grid-template-columns:1fr;
+      gap:0;
       margin-top:22px;
+      width:100%;
     }
 
     .final-button{
-      min-height:36px;
+      width:100%;
+      min-height:72px;
+      padding:24px 20px;
+      font-size:60px;
       border:5px solid #fff;
       outline:3px solid #111;
       border-radius:12px;
@@ -1371,7 +1378,7 @@
     }
 
 
-/* v1.0.23 — embedded transparent logo */
+/* v1.0.55 — embedded transparent logo */
 .logo {
   position: relative !important;
   width: min(510px, 42vw) !important;
@@ -1425,7 +1432,7 @@
 
 
 /* =========================================================
-   v1.0.23 — ACTION PANEL RELOCATION FIX
+   v1.0.55 — ACTION PANEL RELOCATION FIX
    The original side-panel and runner-control elements remain in
    the DOM (hidden) so existing JavaScript IDs continue to work.
    ========================================================= */
@@ -1521,7 +1528,7 @@
 
 
 
-    /* v1.0.23 — arcade count panel */
+    /* v1.0.55 — arcade count panel */
     .count-panel{
       padding:0;
       overflow:hidden;
@@ -1673,7 +1680,7 @@
     }
 
 
-    /* v1.0.23 — horizontal pitch controls above Play By Play */
+    /* v1.0.55 — horizontal pitch controls above Play By Play */
     .pitch-control-section{
       margin-top:18px;
       padding:14px;
@@ -1700,7 +1707,7 @@
     }
 
 
-    /* v1.0.23 — compact field height to eliminate empty side-panel space */
+    /* v1.0.55 — compact field height to eliminate empty side-panel space */
     @media (min-width:1001px){
       .field-wrap{
         min-height:430px !important;
@@ -1736,7 +1743,7 @@
     }
 
 
-    /* v1.0.23 — align bases with the diamond corners */
+    /* v1.0.55 — align bases with the diamond corners */
     @media (min-width:1001px){
       .base.first{
         right:44px !important;
@@ -1754,7 +1761,7 @@
     }
 
 
-    /* v1.0.23 — move 1st and 3rd bases inward toward the infield */
+    /* v1.0.55 — move 1st and 3rd bases inward toward the infield */
     @media (min-width:1001px){
       .base.first{
         right:62px !important;
@@ -1768,7 +1775,7 @@
     }
 
 
-    /* v1.0.23 — geometrically anchor all bases to the green infield corners */
+    /* v1.0.55 — geometrically anchor all bases to the green infield corners */
     @media (min-width:1001px){
       /*
         Desktop field geometry:
@@ -1801,7 +1808,7 @@
     }
 
 
-/* v1.0.23 — reduce top padding above the field */
+/* v1.0.55 — reduce top padding above the field */
 @media (min-width:1001px){
   .field-wrap{
     padding-top:8px !important;
@@ -1814,7 +1821,7 @@
 }
 
 
-/* v1.0.23 — minimize top space above .hero */
+/* v1.0.55 — minimize top space above .hero */
 .hero{
   margin-top:0 !important;
   padding-top:4px !important;
@@ -1825,7 +1832,7 @@ body>.hero:first-child,
 }
 
 
-/* v1.0.23 — shift logo layer 20% to the right */
+/* v1.0.55 — shift logo layer 20% to the right */
 .brand-box,
 .logo-layer,
 .brand,
@@ -1835,7 +1842,7 @@ body>.hero:first-child,
 }
 
 
-/* v1.0.23 — five pitch-control buttons and Trap Door scoreboard column */
+/* v1.0.55 — five pitch-control buttons and Trap Door scoreboard column */
 .pitch-control-row{
   grid-template-columns:repeat(5,minmax(0,1fr)) !important;
 }
@@ -1844,7 +1851,7 @@ body>.hero:first-child,
 }
 
 
-/* v1.0.23 embedded menu music */
+/* v1.0.55 embedded menu music */
 .team-start-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -1859,6 +1866,205 @@ body>.hero:first-child,
 }
 @media(max-width:560px){
   .team-start-actions{grid-template-columns:1fr;}
+}
+
+
+#newGameFinalBtn{
+  font-size:clamp(23px,5.25vw,44px);
+  line-height:1;
+}
+
+
+
+
+
+
+
+
+#teamNameConfirmBtn{
+  min-height:54px;
+  height:54px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  box-sizing:border-box;
+}
+#teamNameConfirmBtn .play-ball-text{
+  line-height:1;
+}
+#teamNameConfirmBtn .play-ball-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  line-height:1;
+  flex:0 0 auto;
+}
+
+
+
+#teamNameConfirmBtn{
+  transition:transform 80ms ease, box-shadow 80ms ease, filter 80ms ease;
+  -webkit-tap-highlight-color:transparent;
+}
+#teamNameConfirmBtn:active{
+  transform:translateY(6px);
+  box-shadow:0 2px 0 #111, inset 0 2px 5px rgba(0,0,0,.35);
+  filter:brightness(.92);
+}
+
+
+button{
+  transition:transform 80ms ease, box-shadow 80ms ease, filter 80ms ease;
+  -webkit-tap-highlight-color:transparent;
+}
+button:not(:disabled):active,
+button:not(:disabled).is-pressed{
+  transform:translateY(5px) !important;
+  filter:brightness(.90);
+  box-shadow:0 2px 0 #111, inset 0 2px 5px rgba(0,0,0,.35) !important;
+}
+
+
+.spark{
+  animation-duration:var(--duration,1.25s);
+  animation-timing-function:cubic-bezier(.12,.68,.25,1);
+}
+.spark.circle{border-radius:50%}
+.spark.square{border-radius:2px}
+.spark.diamond{border-radius:2px;transform:rotate(45deg)}
+.spark.streak{border-radius:999px}
+.spark.star{
+  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 94%,50% 72%,21% 94%,32% 57%,2% 35%,39% 35%);
+}
+.spark.cross{
+  clip-path:polygon(35% 0,65% 0,65% 35%,100% 35%,100% 65%,65% 65%,65% 100%,35% 100%,35% 65%,0 65%,0 35%,35% 35%);
+}
+
+
+/* v1.0.55: white scoreboard and team-score backgrounds */
+.scoreboard-shell,
+.scoreboard-table,
+.scoreboard-table th,
+.scoreboard-table td,
+.team-cell,
+.inning-input{
+  background:#fff !important;
+}
+
+.scoreboard-table th,
+.scoreboard-table td{
+  color:#111 !important;
+  border-color:#777 !important;
+}
+
+.inning-input{
+  color:#111 !important;
+  text-shadow:none !important;
+}
+
+.main-score,
+.score-side,
+.inning-panel,
+.score-number{
+  background:#fff !important;
+}
+
+.score-number{
+  color:#111 !important;
+  border-color:#777 !important;
+  text-shadow:none !important;
+}
+
+.inning-panel{
+  color:#111 !important;
+  border-color:#777 !important;
+}
+
+.inning-panel .inning-num,
+.inning-panel .small,
+.inning-panel .half{
+  color:#111 !important;
+  text-shadow:none !important;
+}
+
+
+/* v1.0.55: bold all numeric score displays while retaining white backgrounds */
+.score-number,
+.inning-input,
+#finalAwayScore,
+#finalHomeScore,
+.final-score,
+.scoreboard-table input[type="number"],
+.scoreboard-table td{
+  font-weight:900 !important;
+}
+
+
+/* v1.0.55 restore inning grid lines */
+.scoreboard-table{
+  border-collapse:collapse !important;
+}
+.scoreboard-table th,
+.scoreboard-table td{
+  border:2px solid #777 !important;
+}
+.scoreboard-table td+td,
+.scoreboard-table th+th{
+  border-left:2px solid #777 !important;
+}
+.inning-input{
+  border-left:1px solid transparent !important;
+  border-right:1px solid transparent !important;
+}
+
+
+/* v1.0.55: visible separators directly between inning score inputs */
+#inningHeaderGrid > div:not(:last-child),
+#awayInnings > .inning-input:not(:last-child),
+#homeInnings > .inning-input:not(:last-child){
+  border-right:2px solid #777 !important;
+}
+
+#awayInnings > .inning-input,
+#homeInnings > .inning-input{
+  box-sizing:border-box !important;
+  border-top:0 !important;
+  border-bottom:0 !important;
+  border-left:0 !important;
+}
+
+#awayInnings,
+#homeInnings,
+#inningHeaderGrid{
+  column-gap:0 !important;
+}
+
+
+/* v1.0.62 Final score styling */
+.final-team-score{
+  background:#000 !important;
+  color:#fff !important;
+}
+
+
+/* v1.0.62 Final score styling */
+.final-team-score{
+  background:#fff !important;
+  color:#000 !important;
+}
+
+
+/* v1.0.62 remove glow from final score */
+.final-team-score,
+.final-team-score *,
+#finalAwayScore,
+#finalHomeScore{
+  text-shadow:none !important;
+  box-shadow:none !important;
+  filter:none !important;
 }
 
 </style>
@@ -2069,7 +2275,7 @@ body>.hero:first-child,
         <input id="newHomeName" class="team-name-entry" maxlength="18" value="HOME" autocomplete="off">
       </div>
     </div>
-    <button class="team-name-confirm" id="teamNameConfirmBtn">PLAY BALL!</button>
+    <button class="team-name-confirm" id="teamNameConfirmBtn" aria-label="Play Ball"><span class="play-ball-icon baseball" aria-hidden="true">⚾</span><span class="play-ball-text">PLAY BALL!</span><span class="play-ball-icon baseball" aria-hidden="true">⚾</span></button>
   </div>
 </div>
 
@@ -2096,7 +2302,6 @@ body>.hero:first-child,
 
     <div class="final-actions">
       <button class="final-button primary" id="newGameFinalBtn">NEW GAME</button>
-      <button class="final-button secondary" id="closeFinalBtn">VIEW SCOREBOARD</button>
     </div>
   </div>
 </div>
@@ -2519,6 +2724,7 @@ body>.hero:first-child,
       state.half='bottom';
       render();
       showAtBatPopup();
+      playRandomBaseballCharge();
       return;
     }
 
@@ -2527,6 +2733,7 @@ body>.hero:first-child,
       state.inning++;
       render();
       showAtBatPopup();
+      playRandomBaseballCharge();
       return;
     }
 
@@ -2558,8 +2765,11 @@ body>.hero:first-child,
       logPlay(isTrapDoor?'Trap Door strikeout.':'Strikeout.');
       toast('STRIKEOUT');
       if(state.outs>=3){changeSides(true);return}
+    }else if(state.strikes===2){
+      playStrikeTwoSound();
+      if(isTrapDoor) logPlay('Trap Door strike.');
     }else{
-      playActionSound('strike');
+      playStrikeOneSound();
       if(isTrapDoor) logPlay('Trap Door strike.');
     }
     render();
@@ -2712,10 +2922,12 @@ body>.hero:first-child,
   }
 
 
-  function openTeamNameModal(){
+  function openTeamNameModal(awayName,homeName){
     const modal=$('#teamNameModal');
-    $('#newAwayName').value='VISITOR';
-    $('#newHomeName').value='HOME';
+    const currentAway=(awayName||$('#awayName')?.value||'VISITOR').trim()||'VISITOR';
+    const currentHome=(homeName||$('#homeName')?.value||'HOME').trim()||'HOME';
+    $('#newAwayName').value=currentAway.toUpperCase();
+    $('#newHomeName').value=currentHome.toUpperCase();
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
     setTimeout(()=>{
@@ -2731,6 +2943,8 @@ body>.hero:first-child,
   }
 
   function confirmTeamNames(){
+    playPlayBallSound();
+    stopNewGameMusic();
     const away=($('#newAwayName').value.trim()||'VISITOR').toUpperCase();
     const home=($('#newHomeName').value.trim()||'HOME').toUpperCase();
     $('#awayName').value=away;
@@ -2742,6 +2956,7 @@ body>.hero:first-child,
   }
 
   function showFinalResults(){
+    playFinalMusic();
     const awayScore=total('away');
     const homeScore=total('home');
     const awayName=teamName('away');
@@ -2765,67 +2980,153 @@ body>.hero:first-child,
     }
 
     const modal=$('#finalModal');
+    if(!modal) return;
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
+    modal.style.display='flex';
+    modal.style.visibility='visible';
+    modal.style.opacity='1';
+    modal.style.zIndex='10000';
     launchFinalFireworks();
   }
 
   function hideFinalResults(){
     const modal=$('#finalModal');
+    if(!modal) return;
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden','true');
+    modal.style.display='none';
+    modal.style.visibility='hidden';
+    modal.style.opacity='0';
   }
 
   function launchFinalFireworks(){
     const fw=$('#fireworks');
-    const colors=['#ffd429','#ff3b2e','#42c6ff','#6dff66','#ffffff','#ff79dc','#ff8a18'];
-    const bursts=[
-      [10,18],[28,12],[50,10],[72,13],[90,20],
-      [18,42],[40,35],[62,37],[82,44],
-      [8,68],[30,62],[50,58],[70,64],[92,70]
+    if(!fw) return;
+
+    const palettes=[
+      ['#ffd429','#ff3b2e','#42c6ff','#6dff66','#ffffff','#ff79dc','#ff8a18'],
+      ['#ffffff','#ffe86b','#ffb300','#ff5e00'],
+      ['#6ee7ff','#2f80ff','#975cff','#ff77df'],
+      ['#7dff78','#19d98b','#ffffff','#ffe45e']
+    ];
+    const shapes=['circle','square','diamond','streak','star','cross'];
+
+    function createBurst(x,y,options={}){
+      const count=options.count||52;
+      const radiusMin=options.radiusMin||90;
+      const radiusMax=options.radiusMax||280;
+      const palette=options.palette||palettes[Math.floor(Math.random()*palettes.length)];
+      const pattern=options.pattern||'ring';
+      const duration=options.duration||1250;
+
+      for(let i=0;i<count;i++){
+        const s=document.createElement('span');
+        const shape=shapes[Math.floor(Math.random()*shapes.length)];
+        s.className='spark '+shape;
+        s.style.left=x+'vw';
+        s.style.top=y+'vh';
+        s.style.background=palette[Math.floor(Math.random()*palette.length)];
+
+        let angle;
+        if(pattern==='spiral'){
+          angle=(Math.PI*2*i/count)+(i*.16);
+        }else if(pattern==='fan'){
+          angle=(-Math.PI*.85)+(Math.PI*1.7*i/Math.max(1,count-1));
+        }else{
+          angle=(Math.PI*2*i/count)+(Math.random()*.12);
+        }
+
+        let distance=radiusMin+Math.random()*(radiusMax-radiusMin);
+        if(pattern==='double-ring') distance=i%2===0?radiusMin:radiusMax;
+        if(pattern==='starburst') distance*=.72+Math.abs(Math.sin(angle*2.5))*.48;
+
+        let size=5+Math.random()*12;
+        let width=size;
+        let height=size;
+
+        if(shape==='streak'){
+          width=5+Math.random()*7;
+          height=18+Math.random()*28;
+          s.style.transform='rotate('+(angle*180/Math.PI+90)+'deg)';
+        }else if(shape==='star' || shape==='cross'){
+          size=9+Math.random()*17;
+          width=height=size;
+        }
+
+        s.style.width=width+'px';
+        s.style.height=height+'px';
+        s.style.setProperty('--x',Math.cos(angle)*distance+'px');
+        s.style.setProperty('--y',Math.sin(angle)*distance+'px');
+        s.style.setProperty('--duration',(duration+Math.random()*500)+'ms');
+        s.style.boxShadow=Math.random()>.55?'0 0 10px currentColor':'none';
+        fw.appendChild(s);
+        setTimeout(()=>s.remove(),duration+650);
+      }
+    }
+
+    const openingBursts=[
+      [6,16],[18,9],[31,18],[44,8],[57,16],[70,9],[83,18],[95,12],
+      [10,36],[24,29],[38,39],[52,27],[66,38],[80,30],[92,40],
+      [5,61],[18,54],[32,67],[47,53],[61,66],[76,55],[91,65],
+      [14,82],[35,77],[50,84],[67,76],[86,82]
     ];
 
-    bursts.forEach(([x,y],j)=>{
+    openingBursts.forEach(([x,y],index)=>{
       setTimeout(()=>{
-        for(let i=0;i<54;i++){
-          const s=document.createElement('span');
-          s.className='spark';
-          s.style.left=x+'vw';
-          s.style.top=y+'vh';
-          s.style.background=colors[Math.floor(Math.random()*colors.length)];
-          const a=Math.PI*2*i/54;
-          const d=95+Math.random()*210;
-          s.style.width=(7+Math.random()*5)+'px';
-          s.style.height=s.style.width;
-          s.style.setProperty('--x',Math.cos(a)*d+'px');
-          s.style.setProperty('--y',Math.sin(a)*d+'px');
-          fw.appendChild(s);
-          setTimeout(()=>s.remove(),1150);
-        }
-      },j*125);
+        const patterns=['ring','double-ring','spiral','starburst','fan'];
+        createBurst(x,y,{
+          count:44+Math.floor(Math.random()*32),
+          radiusMin:75+Math.random()*45,
+          radiusMax:210+Math.random()*150,
+          pattern:patterns[index%patterns.length],
+          duration:1100+Math.random()*450
+        });
+      },index*75);
     });
 
-    for(let wave=1;wave<=3;wave++){
+    for(let wave=1;wave<=5;wave++){
       setTimeout(()=>{
-        [[20,25],[50,16],[80,26],[35,55],[65,52]].forEach(([x,y],j)=>{
+        const waveBursts=[
+          [8+Math.random()*10,16+Math.random()*22],
+          [27+Math.random()*10,10+Math.random()*28],
+          [48+Math.random()*8,12+Math.random()*22],
+          [66+Math.random()*10,12+Math.random()*28],
+          [84+Math.random()*10,18+Math.random()*22],
+          [18+Math.random()*12,48+Math.random()*25],
+          [42+Math.random()*12,45+Math.random()*28],
+          [68+Math.random()*12,47+Math.random()*26],
+          [88+Math.random()*7,52+Math.random()*22]
+        ];
+        waveBursts.forEach(([x,y],j)=>{
           setTimeout(()=>{
-            for(let i=0;i<46;i++){
-              const s=document.createElement('span');
-              s.className='spark';
-              s.style.left=x+'vw';
-              s.style.top=y+'vh';
-              s.style.background=colors[Math.floor(Math.random()*colors.length)];
-              const a=Math.PI*2*i/46;
-              const d=85+Math.random()*180;
-              s.style.setProperty('--x',Math.cos(a)*d+'px');
-              s.style.setProperty('--y',Math.sin(a)*d+'px');
-              fw.appendChild(s);
-              setTimeout(()=>s.remove(),1100);
-            }
-          },j*110);
+            const patterns=['double-ring','spiral','starburst','ring','fan'];
+            createBurst(x,y,{
+              count:38+Math.floor(Math.random()*34),
+              radiusMin:70+Math.random()*50,
+              radiusMax:190+Math.random()*170,
+              pattern:patterns[Math.floor(Math.random()*patterns.length)],
+              duration:1150+Math.random()*550
+            });
+          },j*95);
         });
-      },wave*1500);
+      },wave*1250);
     }
+
+    // Large finale bursts with oversized stars, streaks, and double rings.
+    setTimeout(()=>{
+      [[12,24],[34,14],[50,22],[66,13],[88,25],[25,52],[50,48],[75,54]].forEach(([x,y],j)=>{
+        setTimeout(()=>{
+          createBurst(x,y,{
+            count:76,
+            radiusMin:125,
+            radiusMax:390,
+            pattern:j%2===0?'double-ring':'starburst',
+            duration:1550
+          });
+        },j*120);
+      });
+    },6650);
   }
 
   function showRunScored(runs){
@@ -2941,10 +3242,14 @@ body>.hero:first-child,
   }
 
   function resetGame(){
+    stopFinalMusic();
     openInningsModal();
+    startNewGameMusic();
   }
 
   function startNewGame(innings){
+    const preservedAwayName=($('#awayName')?.value||'VISITOR').trim()||'VISITOR';
+    const preservedHomeName=($('#homeName')?.value||'HOME').trim()||'HOME';
     state.inningsToPlay=innings;
     state.gameOver=false;
     state.inning=1;
@@ -2963,7 +3268,7 @@ body>.hero:first-child,
     localStorage.removeItem('superStadiumScorekeeper');
     closeInningsModal();
     render();
-    openTeamNameModal();
+    openTeamNameModal(preservedAwayName,preservedHomeName);
   }
 
   // Unlock audio on the earliest direct mobile gesture. The click handler then
@@ -3004,12 +3309,16 @@ body>.hero:first-child,
   });
 
   $('#newGameFinalBtn').addEventListener('click',()=>{
+    stopFinalMusic();
     hideFinalResults();
     openInningsModal();
+    startNewGameMusic();
   });
-  $('#closeFinalBtn').addEventListener('click',hideFinalResults);
   $$('.innings-choice').forEach(button=>{
-    button.addEventListener('click',()=>startNewGame(Number(button.dataset.innings)));
+    button.addEventListener('click',()=>{
+      startNewGameMusic();
+      startNewGame(Number(button.dataset.innings));
+    });
   });
   $('#inningsCancelBtn').addEventListener('click',closeInningsModal);
   $('#advance1Btn').addEventListener('click',()=>manualAdvance(1));
@@ -3074,6 +3383,16 @@ body>.hero:first-child,
   }
   render();
 
+  // Always begin a page launch at the New Game setup popup.
+  // This must run inside the app's scope because openInningsModal()
+  // is not a global function.
+  setTimeout(()=>{
+    openInningsModal();
+    if(typeof startNewGameMusic === 'function'){
+      startNewGameMusic();
+    }
+  }, 0);
+
 function updateRunnerHatColors(){
   const fw=document.querySelector('.field-wrap');
   if(!fw) return;
@@ -3092,121 +3411,73 @@ render=function(){
 
 })();
 
-/* v1.0.23 menu music */
-document.addEventListener('DOMContentLoaded',()=>{
- const m=document.getElementById('menuMusic');
- if(m){
-   m.volume=0.45;
-   const start=()=>{m.play().catch(()=>{});document.removeEventListener('pointerdown',start);};
-   document.addEventListener('pointerdown',start,{once:true});
- }
- const stop=()=>{
-   if(m){m.pause();m.currentTime=0;}
- };
- ['singleBtn','doubleBtn','tripleBtn','homeRunBtn','walkBtn','outBtn','ballBtn','strikeBtn','trapDoorBtn']
- .forEach(id=>{
-   const b=document.getElementById(id);
-   if(b) b.addEventListener('click',stop,{once:true});
- });
-});
+let setupMusicActive = false;
 
-/* v1.0.23 menu music */
-document.addEventListener('DOMContentLoaded',()=>{
-  const music=document.getElementById('menuMusic');
-  const musicButton=document.getElementById('musicStartBtn');
-  const playBallButton=document.getElementById('teamNameConfirmBtn');
-  let gameStarted=false;
-
-  const updateMusicButton=(playing)=>{
-    if(!musicButton) return;
-    musicButton.textContent=playing?'♫ MUSIC PLAYING':'♫ START MUSIC';
-    musicButton.classList.toggle('is-playing',playing);
-  };
-
-  const startMusic=()=>{
-    if(!music || gameStarted) return;
-    music.volume=0.55;
-    music.play()
-      .then(()=>updateMusicButton(true))
-      .catch(()=>updateMusicButton(false));
-  };
-
-  const stopMusic=()=>{
-    gameStarted=true;
-    if(music){
-      music.pause();
-      music.currentTime=0;
-    }
-    updateMusicButton(false);
-  };
-
-  // Attempt autoplay where the browser permits it.
-  startMusic();
-
-  // Reliable manual activation for browsers that block autoplay.
-
-  // Any setup interaction can unlock audio, but PLAY BALL always stops it.
-  const unlockMusic=(event)=>{
-    if(gameStarted || event.target===playBallButton || event.target===musicButton) return;
-    startMusic();
-  };
-  document.addEventListener('pointerdown',unlockMusic);
-  document.addEventListener('keydown',unlockMusic);
-
-  if(playBallButton){
-    playBallButton.addEventListener('click',stopMusic);
-  }
-});
-
-/* v1.0.23 menu music */
-document.addEventListener('DOMContentLoaded',()=>{
+function startNewGameMusic(){
   const music = document.getElementById('menuMusic');
-  const playBallButton = document.getElementById('teamNameConfirmBtn');
-  let gameStarted = false;
+  if(!music) return;
 
-    async function startMusic(){
-    if(!music || gameStarted) return;
-    try{
-      music.muted = false;
-      music.volume = 1;
-      if(music.readyState < 2) music.load();
-      await music.play();
+  setupMusicActive = true;
+  music.loop = true;
+  music.muted = false;
+  music.volume = 0.55;
 
-    }catch(error){
-      console.error('Menu music could not start:', error);
+  try{
+    if(music.readyState < 2) music.load();
+    music.play().catch(()=>{});
+  }catch(e){}
+}
 
-    }
+function stopNewGameMusic(){
+  setupMusicActive = false;
+  const music = document.getElementById('menuMusic');
+  if(!music) return;
+
+  try{
+    music.pause();
+    music.currentTime = 0;
+  }catch(e){}
+}
+
+function stopFinalMusic(){
+  const music = document.getElementById('finalMusic');
+  if(!music) return;
+
+  try{
+    music.pause();
+    music.currentTime = 0;
+  }catch(e){}
+}
+
+/*
+  Browsers may block audio before the first user gesture. While a new-game
+  popup is open, the first tap/click/keypress retries the setup music.
+*/
+function unlockNewGameMusic(){
+  if(setupMusicActive) startNewGameMusic();
+}
+
+document.addEventListener('pointerdown', unlockNewGameMusic);
+document.addEventListener('touchstart', unlockNewGameMusic, {passive:true});
+document.addEventListener('keydown', unlockNewGameMusic);
+
+document.addEventListener('click', event=>{
+  if(!setupMusicActive) return;
+  if(event.target.closest('#inningsModal, #teamNameModal')){
+    startNewGameMusic();
   }
-
-  function stopMusic(){
-    gameStarted = true;
-    if(music){
-      music.pause();
-      music.currentTime = 0;
-    }
-
-  }
-
-  if(musicButton){
-    musicButton.addEventListener('click', async (event)=>{
-      event.preventDefault();
-      event.stopPropagation();
-      if(music.paused) await startMusic();
-      else{
-        music.pause();
-  
-      }
-    });
-  }
-
-  if(playBallButton){
-    playBallButton.addEventListener('click', stopMusic);
-  }
-
-  // Browsers may allow this; otherwise the START MUSIC button provides the required gesture.
-  startMusic();
 });
 
+
+function playPlayBallSound(){
+  const a=document.getElementById('playBallSound');
+  if(!a) return;
+  try{
+    a.pause();
+    a.currentTime=0;
+    a.play().catch(()=>{});
+  }catch(e){}
+}
 
 function playStrikeoutSound(){
   const s=document.getElementById('strikeoutSound');
@@ -3238,6 +3509,21 @@ function playCheerSound(){
  },700);
 }
 
+
+function playFinalMusic(){
+ stopNewGameMusic();
+ playCheerSound();
+ const a=document.getElementById('finalMusic');
+ if(!a) return;
+ setTimeout(()=>{
+   try{
+     a.pause();
+     a.currentTime=0;
+     a.play().catch(()=>{});
+   }catch(e){}
+ },700);
+}
+
 </script>
 
 <audio id="strikeoutSound" preload="auto">
@@ -3253,6 +3539,95 @@ function playCheerSound(){
 <audio id="cheerSound" preload="auto">
   <source src="cheer.mp3" type="audio/mpeg">
 </audio>
+
+
+<audio id="finalMusic" preload="auto">
+  <source src="final-music.mp3" type="audio/mpeg">
+</audio>
+
+
+<audio id="playBallSound" preload="auto">
+  <source src="play-ball.mp3" type="audio/mpeg">
+</audio>
+
+
+<script>
+document.addEventListener('pointerdown', function(event){
+  const button = event.target.closest('button:not(:disabled)');
+  if (!button) return;
+  button.classList.add('is-pressed');
+});
+
+function clearPressedButtons(){
+  document.querySelectorAll('button.is-pressed').forEach(function(button){
+    button.classList.remove('is-pressed');
+  });
+}
+
+document.addEventListener('pointerup', clearPressedButtons);
+document.addEventListener('pointercancel', clearPressedButtons);
+window.addEventListener('blur', clearPressedButtons);
+</script>
+
+
+<audio id="strikeOneSound" preload="auto">
+  <source src="strike-one.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function playStrikeOneSound(){
+  const a=document.getElementById('strikeOneSound');
+  if(!a) return;
+  try{a.pause();a.currentTime=0;a.play().catch(()=>{});}catch(e){}
+}
+</script>
+
+
+<audio id="strikeTwoSound" preload="auto">
+<source src="strike-two.mp3" type="audio/mpeg">
+</audio>
+<script>
+function playStrikeTwoSound(){
+ const a=document.getElementById('strikeTwoSound');
+ if(!a) return;
+ try{a.pause();a.currentTime=0;a.play().catch(()=>{});}catch(e){}
+}
+</script>
+
+
+<audio id="baseballCharge1" preload="auto">
+  <source src="baseball-charge.mp3" type="audio/mpeg">
+</audio>
+<audio id="baseballCharge2" preload="auto">
+  <source src="baseball-charge-normal.mp3" type="audio/mpeg">
+</audio>
+<audio id="baseballCharge3" preload="auto">
+  <source src="baseball-charge-classic.mp3" type="audio/mpeg">
+</audio>
+<audio id="baseballCharge4" preload="auto">
+  <source src="baseball-charge-organ.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function playRandomBaseballCharge(){
+  const ids=['baseballCharge1','baseballCharge2','baseballCharge3','baseballCharge4'];
+  const selected=document.getElementById(ids[Math.floor(Math.random()*ids.length)]);
+  if(!selected) return;
+
+  ids.forEach(id=>{
+    const audio=document.getElementById(id);
+    if(audio && audio!==selected){
+      try{ audio.pause(); audio.currentTime=0; }catch(e){}
+    }
+  });
+
+  try{
+    selected.pause();
+    selected.currentTime=0;
+    selected.play().catch(()=>{});
+  }catch(e){}
+}
+</script>
 
 </body>
 </html>
