@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Super Stadium Baseball Scorekeeper v1.0.9</title>
+  <title>Super Stadium Baseball Scorekeeper v1.0.10</title>
   <style>
     :root{
       --red:#e21a12;
@@ -1371,7 +1371,7 @@
     }
 
 
-/* v1.0.9 — embedded transparent logo */
+/* v1.0.10 — embedded transparent logo */
 .logo {
   position: relative !important;
   width: min(510px, 42vw) !important;
@@ -1425,7 +1425,7 @@
 
 
 /* =========================================================
-   v1.0.9 — ACTION PANEL RELOCATION FIX
+   v1.0.10 — ACTION PANEL RELOCATION FIX
    The original side-panel and runner-control elements remain in
    the DOM (hidden) so existing JavaScript IDs continue to work.
    ========================================================= */
@@ -1521,7 +1521,7 @@
 
 
 
-    /* v1.0.9 — arcade count panel */
+    /* v1.0.10 — arcade count panel */
     .count-panel{
       padding:0;
       overflow:hidden;
@@ -1673,7 +1673,7 @@
     }
 
 
-    /* v1.0.9 — horizontal pitch controls above Play By Play */
+    /* v1.0.10 — horizontal pitch controls above Play By Play */
     .pitch-control-section{
       margin-top:18px;
       padding:14px;
@@ -1700,7 +1700,7 @@
     }
 
 
-    /* v1.0.9 — compact field height to eliminate empty side-panel space */
+    /* v1.0.10 — compact field height to eliminate empty side-panel space */
     @media (min-width:1001px){
       .field-wrap{
         min-height:430px !important;
@@ -1736,7 +1736,7 @@
     }
 
 
-    /* v1.0.9 — align bases with the diamond corners */
+    /* v1.0.10 — align bases with the diamond corners */
     @media (min-width:1001px){
       .base.first{
         right:44px !important;
@@ -1754,7 +1754,7 @@
     }
 
 
-    /* v1.0.9 — move 1st and 3rd bases inward toward the infield */
+    /* v1.0.10 — move 1st and 3rd bases inward toward the infield */
     @media (min-width:1001px){
       .base.first{
         right:62px !important;
@@ -1768,7 +1768,7 @@
     }
 
 
-    /* v1.0.9 — geometrically anchor all bases to the green infield corners */
+    /* v1.0.10 — geometrically anchor all bases to the green infield corners */
     @media (min-width:1001px){
       /*
         Desktop field geometry:
@@ -1801,7 +1801,7 @@
     }
 
 
-/* v1.0.9 — reduce top padding above the field */
+/* v1.0.10 — reduce top padding above the field */
 @media (min-width:1001px){
   .field-wrap{
     padding-top:8px !important;
@@ -1814,7 +1814,7 @@
 }
 
 
-/* v1.0.9 — minimize top space above .hero */
+/* v1.0.10 — minimize top space above .hero */
 .hero{
   margin-top:0 !important;
   padding-top:4px !important;
@@ -1825,7 +1825,7 @@ body>.hero:first-child,
 }
 
 
-/* v1.0.9 — shift logo layer 20% to the right */
+/* v1.0.10 — shift logo layer 20% to the right */
 .brand-box,
 .logo-layer,
 .brand,
@@ -1835,7 +1835,7 @@ body>.hero:first-child,
 }
 
 
-/* v1.0.9 — five pitch-control buttons and Trap Door scoreboard column */
+/* v1.0.10 — five pitch-control buttons and Trap Door scoreboard column */
 .pitch-control-row{
   grid-template-columns:repeat(5,minmax(0,1fr)) !important;
 }
@@ -1999,7 +1999,7 @@ body>.hero:first-child,
       <div class="pitch-control-row">
         <button class="arcade-btn blue" id="ballBtn">+ BALL</button>
         <button class="arcade-btn orange" id="strikeBtn">+ STRIKE</button>
-        <button class="arcade-btn orange" id="trapDoorBtn">TRAP DOOR</button>
+        <button class="arcade-btn orange" id="trapDoorBtn">+ TRAP DOOR</button>
         <button class="arcade-btn out" id="outBtn">OUT</button>
         <button class="arcade-btn red" id="undoBtn">↶ UNDO</button>
       </div>
