@@ -1339,7 +1339,7 @@
       touch-action:manipulation;
     }
 
-    /* v2.13.3: recolor only the runner's cap; face and skin remain unchanged. */
+    /* v3.1.3: recolor only the runner's cap; face and skin remain unchanged. */
     .runner-hat-layer{
       position:absolute;
       left:50%;
@@ -2341,7 +2341,7 @@ button:not(:disabled).is-pressed{
 
     <div class="actions-section logic-only-actions">
       <section class="panel" id="runnerControlPanel" style="display:none;">
-        <!-- Hidden in v2.13.3. Set display:block (or remove the inline style) to re-enable. -->
+        <!-- Hidden in v3.1.3. Set display:block (or remove the inline style) to re-enable. -->
         <div class="panel-title">BASE RUNNER CONTROL</div>
         <div class="runner-control">
           <div class="runner-row">
@@ -2798,7 +2798,7 @@ button:not(:disabled).is-pressed{
     let scored=0;
 
     // Every hit gets one bat crack, including hits that score runs.
-    setTimeout(()=>playSingleHitSound(),500);
+    playSingleHitSound();
 
     if(type==='single'){
       scored=batterHit(1);
@@ -3669,11 +3669,33 @@ function playStrikeoutSound(){
 function playSingleHitSound(){
   const s=document.getElementById('singleHitSound');
   if(!s) return;
+
   try{
     s.pause();
     s.currentTime=0;
-    s.play().catch(()=>{});
-  }catch(e){}
+    s.muted=false;
+    s.volume=1;
+
+    const attempt=s.play();
+    if(attempt && typeof attempt.catch==='function'){
+      attempt.catch(error=>{
+        // Recovery path for iOS if the media element was interrupted or stale.
+        try{
+          s.load();
+          s.currentTime=0;
+          s.muted=false;
+          s.volume=1;
+          s.play().catch(retryError=>{
+            console.warn('Bat-hit sound could not play:',retryError);
+          });
+        }catch(retryError){
+          console.warn('Bat-hit sound could not play:',retryError);
+        }
+      });
+    }
+  }catch(error){
+    console.warn('Bat-hit sound could not play:',error);
+  }
 }
 
 
@@ -3730,7 +3752,7 @@ function playFinalMusic(){
 
 
 <audio id="singleHitSound" preload="auto">
-  <source src="single-hit.mp3" type="audio/mpeg">
+  <source src="single-hit-ipad-safe.mp3" type="audio/mpeg">
 </audio>
 
 
