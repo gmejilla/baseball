@@ -2043,21 +2043,21 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.67 Final score styling */
+/* v1.0.72 Final score styling */
 .final-team-score{
   background:#000 !important;
   color:#fff !important;
 }
 
 
-/* v1.0.67 Final score styling */
+/* v1.0.72 Final score styling */
 .final-team-score{
   background:#fff !important;
   color:#000 !important;
 }
 
 
-/* v1.0.67 remove glow from final score */
+/* v1.0.72 remove glow from final score */
 .final-team-score,
 .final-team-score *,
 #finalAwayScore,
@@ -2068,7 +2068,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.67 active batting-team scoreboard row */
+/* v1.0.72 active batting-team scoreboard row */
 .score-team-row > td,
 .score-team-row .team-name,
 .score-team-row .inning-input{
@@ -2087,7 +2087,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.67 don't highlight team name cell/icon */
+/* v1.0.72 don't highlight team name cell/icon */
 .score-team-row.batting-active > td:first-child,
 .score-team-row.batting-active > td:first-child .team-name{
   background:inherit !important;
@@ -2095,7 +2095,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.67 start batting highlight after logo area */
+/* v1.0.72 start batting highlight after logo area */
 .score-team-row.batting-active .team-name{
   background:transparent !important;
   background-image:linear-gradient(to right,
@@ -2110,7 +2110,7 @@ button:not(:disabled).is-pressed{
 }
 
 
-/* v1.0.67: batting highlight begins after the complete team-name box */
+/* v1.0.72: batting highlight begins after the complete team-name box */
 .score-team-row.batting-active > td:first-child,
 .score-team-row.batting-active > td:first-child .team-name,
 .score-team-row.batting-active .team-name{
@@ -2125,6 +2125,33 @@ button:not(:disabled).is-pressed{
 
 .score-team-row.batting-active #homeName{
   background:linear-gradient(#f62822,#a40c08) !important;
+}
+
+
+/* v1.0.72 inning buttons */
+.innings-options{
+  display:grid !important;
+  grid-template-columns:repeat(4,1fr) !important;
+  gap:10px !important;
+}
+.innings-choice{
+  min-width:0 !important;
+}
+.innings-options .innings-choice:nth-child(1){
+  background:linear-gradient(180deg,#ffd54a 0%,#ff8c1a 100%) !important;
+  color:#fff !important;
+}
+.innings-options .innings-choice:nth-child(2){
+  background:#2f80ff !important;
+  color:#fff !important;
+}
+.innings-options .innings-choice:nth-child(3){
+  background:#2fb84d !important;
+  color:#fff !important;
+}
+.innings-options .innings-choice:nth-child(4){
+  background:#d93a35 !important;
+  color:#fff !important;
 }
 
 </style>
@@ -2312,6 +2339,7 @@ button:not(:disabled).is-pressed{
     <div class="innings-modal-title" id="inningsModalTitle">HOW MANY INNINGS?</div>
     <div class="innings-modal-sub">CHOOSE THE LENGTH OF THE NEW GAME</div>
     <div class="innings-options">
+      <button class="innings-choice" data-innings="1">1</button>
       <button class="innings-choice" data-innings="3">3</button>
       <button class="innings-choice" data-innings="6">6</button>
       <button class="innings-choice" data-innings="9">9</button>
