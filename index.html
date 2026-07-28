@@ -1339,7 +1339,7 @@
       touch-action:manipulation;
     }
 
-    /* v2.9.3: recolor only the runner's cap; face and skin remain unchanged. */
+    /* v2.10.3: recolor only the runner's cap; face and skin remain unchanged. */
     .runner-hat-layer{
       position:absolute;
       left:50%;
@@ -2341,7 +2341,7 @@ button:not(:disabled).is-pressed{
 
     <div class="actions-section logic-only-actions">
       <section class="panel" id="runnerControlPanel" style="display:none;">
-        <!-- Hidden in v2.6.3. Set display:block (or remove the inline style) to re-enable. -->
+        <!-- Hidden in v2.10.3. Set display:block (or remove the inline style) to re-enable. -->
         <div class="panel-title">BASE RUNNER CONTROL</div>
         <div class="runner-control">
           <div class="runner-row">
@@ -2751,9 +2751,9 @@ button:not(:disabled).is-pressed{
   }
 
   function clearCount(){state.balls=0;state.strikes=0}
-  function addRuns(n){
+  function addRuns(n,deferCheer=false){
     state.runs[battingTeam()][state.inning-1]+=n;
-    if(n>0) playCheerSound();
+    if(n>0 && !deferCheer) playCheerSound();
   }
 
   function advanceExistingRunners(spaces){
@@ -2767,7 +2767,7 @@ button:not(:disabled).is-pressed{
       else next[target]=true;
     }
     state.bases=next;
-    if(scored)addRuns(scored);
+    if(scored)addRuns(scored,true);
     return scored;
   }
 
@@ -2785,7 +2785,7 @@ button:not(:disabled).is-pressed{
     if(batterTarget>=3)scored++;
     else next[batterTarget]=true;
     state.bases=next;
-    if(scored)addRuns(scored);
+    if(scored)addRuns(scored,true);
     return scored;
   }
 
@@ -2797,26 +2797,25 @@ button:not(:disabled).is-pressed{
     let text='';
     let scored=0;
 
+    // Every hit gets one bat crack, including hits that score runs.
+    setTimeout(()=>playSingleHitSound(),500);
+
     if(type==='single'){
-      playSingleHitSound();
       scored=batterHit(1);
       text=`Single.${scored?` ${scored} run${scored===1?'':'s'} score.`:' Runner to first.'}`;
     }
     if(type==='double'){
-      playSingleHitSound();
       scored=batterHit(2);
       text=`Double.${scored?` ${scored} run${scored===1?'':'s'} score.`:''}`;
     }
     if(type==='triple'){
-      playSingleHitSound();
       scored=batterHit(3);
       text=`Triple.${scored?` ${scored} run${scored===1?'':'s'} score.`:''}`;
     }
     if(type==='hr'){
-      playSingleHitSound();
       state.homeRuns[team]++;
       scored=1+state.bases.filter(Boolean).length;
-      addRuns(scored);
+      addRuns(scored,true);
       state.bases=[false,false,false];
       text=scored===4
         ? 'Grand Slam Home Run! 4 runs score!'
@@ -3294,6 +3293,7 @@ button:not(:disabled).is-pressed{
   }
 
   function showRunScored(runs){
+    playCheerSound();
     const banner=document.createElement('div');
     banner.className='run-banner';
     banner.style.opacity='1';
@@ -3304,6 +3304,7 @@ button:not(:disabled).is-pressed{
   }
 
   function showHomeRun(runs){
+    playCheerSound();
     const isGrandSlam=runs===4;
     const banner=document.createElement('div');
     banner.className=`hr-banner${isGrandSlam?' grand-slam':''}`;
@@ -3316,7 +3317,7 @@ button:not(:disabled).is-pressed{
     if(runs===2) subtitle='2-RUN HOME RUN';
     if(runs===3) subtitle='3-RUN HOME RUN';
     if(isGrandSlam){
-      title='GRAND SLAM HOME RUN!';
+      title='★ GRAND SLAM ★';
       subtitle='BASES CLEARED!';
     }
 
@@ -3670,11 +3671,33 @@ function playSingleHitSound(){
 
 
 function playCheerSound(){
- const a=document.getElementById('cheerSound');
- if(!a) return;
- setTimeout(()=>{
-   try{a.pause();a.currentTime=0;a.play().catch(()=>{});}catch(e){}
- },700);
+  const a=document.getElementById('cheerSound');
+  if(!a) return;
+
+  try{
+    a.pause();
+    a.currentTime=0;
+    a.muted=false;
+    a.volume=1;
+    const attempt=a.play();
+
+    if(attempt && typeof attempt.catch==='function'){
+      attempt.catch(()=>{
+        // Some iOS browsers need the media element reloaded after a delayed play.
+        try{
+          a.load();
+          a.currentTime=0;
+          a.muted=false;
+          a.volume=1;
+          a.play().catch(error=>console.warn('Cheer sound could not play:',error));
+        }catch(error){
+          console.warn('Cheer sound could not play:',error);
+        }
+      });
+    }
+  }catch(error){
+    console.warn('Cheer sound could not play:',error);
+  }
 }
 
 
@@ -3720,6 +3743,43 @@ function playFinalMusic(){
 
 
 <script>
+
+function primeStadiumMedia(){
+  ['cheerSound','singleHitSound'].forEach(id=>{
+    const audio=document.getElementById(id);
+    if(!audio) return;
+
+    try{
+      const originalMuted=audio.muted;
+      const originalVolume=audio.volume;
+      audio.muted=true;
+      audio.volume=0;
+      audio.currentTime=0;
+
+      const started=audio.play();
+      if(started && typeof started.then==='function'){
+        started.then(()=>{
+          audio.pause();
+          audio.currentTime=0;
+          audio.muted=originalMuted;
+          audio.volume=originalVolume;
+        }).catch(()=>{
+          audio.muted=originalMuted;
+          audio.volume=originalVolume;
+        });
+      }else{
+        audio.pause();
+        audio.currentTime=0;
+        audio.muted=originalMuted;
+        audio.volume=originalVolume;
+      }
+    }catch(error){}
+  });
+}
+
+document.addEventListener('pointerdown',primeStadiumMedia,{once:true,passive:true});
+document.addEventListener('touchstart',primeStadiumMedia,{once:true,passive:true});
+
 document.addEventListener('pointerdown', function(event){
   const button = event.target.closest('button:not(:disabled)');
   if (!button) return;
@@ -4006,14 +4066,14 @@ async function showLedHitRibbon(hitType){
   if(token!==ledRibbonPlayToken) return;
 
   await new Promise(resolve=>{
-    ledRibbonHideTimer=window.setTimeout(resolve,500);
+    ledRibbonHideTimer=window.setTimeout(resolve,350);
   });
 
   if(token!==ledRibbonPlayToken) return;
 
   hideLedHitRibbon();
 
-  // Allow the overlay fade-out to begin, then display the original scoring popup.
+  // Popup visibility duration remains unchanged.
   window.setTimeout(()=>{
     const pending=pendingLedPopup;
     pendingLedPopup=null;
@@ -4074,7 +4134,7 @@ function createGuaranteedScorePopup(title,subtitle,isHomeRun,isGrandSlam){
   Object.assign(big.style,{
     fontFamily:'Arial Black, Impact, sans-serif',
     fontWeight:'900',
-    fontSize:'clamp(42px,8vw,84px)',
+    fontSize:isGrandSlam?'clamp(34px,5.8vw,60px)':'clamp(42px,8vw,84px)',
     lineHeight:'1',
     letterSpacing:'1px',
     textShadow:'0 4px 0 rgba(0,0,0,.45)'
@@ -4110,6 +4170,7 @@ function createGuaranteedScorePopup(title,subtitle,isHomeRun,isGrandSlam){
 }
 
 function showRunScored(runs){
+  playCheerSound();
   createGuaranteedScorePopup(
     'RUN SCORED!',
     `${runs} RUN${runs===1?'':'S'} SCORED`,
@@ -4119,13 +4180,14 @@ function showRunScored(runs){
 }
 
 function showHomeRun(runs){
+  playCheerSound();
   const isGrandSlam=runs===4;
   let title='HOME RUN!';
   let subtitle='SOLO HOME RUN';
   if(runs===2) subtitle='2-RUN HOME RUN';
   if(runs===3) subtitle='3-RUN HOME RUN';
   if(isGrandSlam){
-    title='GRAND SLAM HOME RUN!';
+    title='★ GRAND SLAM ★';
     subtitle='BASES CLEARED!';
   }
   createGuaranteedScorePopup(title,subtitle,true,isGrandSlam);
