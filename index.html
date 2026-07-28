@@ -1339,7 +1339,7 @@
       touch-action:manipulation;
     }
 
-    /* v2.10.3: recolor only the runner's cap; face and skin remain unchanged. */
+    /* v2.13.3: recolor only the runner's cap; face and skin remain unchanged. */
     .runner-hat-layer{
       position:absolute;
       left:50%;
@@ -2341,7 +2341,7 @@ button:not(:disabled).is-pressed{
 
     <div class="actions-section logic-only-actions">
       <section class="panel" id="runnerControlPanel" style="display:none;">
-        <!-- Hidden in v2.10.3. Set display:block (or remove the inline style) to re-enable. -->
+        <!-- Hidden in v2.13.3. Set display:block (or remove the inline style) to re-enable. -->
         <div class="panel-title">BASE RUNNER CONTROL</div>
         <div class="runner-control">
           <div class="runner-row">
@@ -2859,7 +2859,7 @@ button:not(:disabled).is-pressed{
     if(state.outs>=3)changeSides(true);else render();
   }
 
-  function changeSides(fromOut=false){
+  async function changeSides(fromOut=false, ledCompletion=null){
     if(!fromOut){
       playActionSound('change');
       saveHistory();
@@ -2879,6 +2879,9 @@ button:not(:disabled).is-pressed{
 
       state.half='bottom';
       render();
+      if(ledCompletion){
+        try{ await ledCompletion; }catch(error){}
+      }
       showAtBatPopup();
       playRandomBaseballCharge();
       return;
@@ -2888,6 +2891,9 @@ button:not(:disabled).is-pressed{
       state.half='top';
       state.inning++;
       render();
+      if(ledCompletion){
+        try{ await ledCompletion; }catch(error){}
+      }
       showAtBatPopup();
       playRandomBaseballCharge();
       return;
@@ -2916,11 +2922,12 @@ button:not(:disabled).is-pressed{
     if(state.strikes>=3){
       playActionSound('strikeout');
       playStrikeoutSound();
+      const strikeoutLedCompletion=showLedHitRibbon('strikeout');
       state.outs++;
       clearCount();
       logPlay(isTrapDoor?'Trap Door strikeout.':'Strikeout.');
       toast('STRIKEOUT');
-      if(state.outs>=3){changeSides(true);return}
+      if(state.outs>=3){changeSides(true,strikeoutLedCompletion);return}
     }else if(state.strikes===2){
       playStrikeTwoSound();
       if(isTrapDoor) logPlay('Trap Door strike.');
@@ -4034,7 +4041,8 @@ async function showLedHitRibbon(hitType){
     single:'single',
     double:'double',
     triple:'triple',
-    hr:'homerun'
+    hr:'homerun',
+    strikeout:'strikeout'
   };
   const animation=animationMap[hitType];
   if(!animation) return;
