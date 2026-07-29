@@ -3744,7 +3744,7 @@ function playFinalMusic(){
  },700);
 }
 
-</script>
+async function playStrike3Sequence(){const a=document.getElementById("strike3Announcement");const s=document.getElementById("strikeThreeSound")||document.getElementById("strikeThree")||document.getElementById("strike-three");try{if(a){a.pause();a.currentTime=0;await a.play().catch(()=>{});await new Promise(r=>{a.onended=r;setTimeout(r,1800);});}}catch(e){}if(s){try{s.pause();s.currentTime=0;s.play().catch(()=>{});}catch(e){}}}</script>
 
 <audio id="strikeoutSound" preload="auto">
   <source src="strikeout.mp3" type="audio/mpeg">
@@ -4224,5 +4224,5 @@ function showHomeRun(runs){
 }
 </script>
 
-</body>
+<audio id="strike3Announcement" preload="auto"><source src="strike-3-your-out.mp4" type="audio/mp4"></audio></body>
 </html>
