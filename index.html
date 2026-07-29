@@ -2921,7 +2921,7 @@ button:not(:disabled).is-pressed{
     state.strikes++;
     if(state.strikes>=3){
       playActionSound('strikeout');
-      playStrikeoutSound();
+      playStrikeThreeAnnouncementThenStrikeout();
       const strikeoutLedCompletion=showLedHitRibbon('strikeout');
       state.outs++;
       clearCount();
@@ -3665,6 +3665,57 @@ function playStrikeoutSound(){
   }catch(e){}
 }
 
+function playStrikeThreeAnnouncementThenStrikeout(){
+  const announcement=document.getElementById('strike3Announcement');
+
+  if(!announcement){
+    playStrikeoutSound();
+    return;
+  }
+
+  try{
+    announcement.pause();
+    announcement.currentTime=0;
+    announcement.muted=false;
+    announcement.volume=1;
+
+    let completed=false;
+    const finish=()=>{
+      if(completed)return;
+      completed=true;
+      announcement.removeEventListener('ended',finish);
+      announcement.removeEventListener('error',finish);
+      playStrikeoutSound();
+    };
+
+    announcement.addEventListener('ended',finish,{once:true});
+    announcement.addEventListener('error',finish,{once:true});
+
+    const attempt=announcement.play();
+    if(attempt && typeof attempt.catch==='function'){
+      attempt.catch(()=>{
+        try{
+          announcement.load();
+          announcement.currentTime=0;
+          announcement.muted=false;
+          announcement.volume=1;
+          const retry=announcement.play();
+          if(retry && typeof retry.catch==='function'){
+            retry.catch(finish);
+          }
+        }catch(error){
+          finish();
+        }
+      });
+    }
+
+    // Safety fallback based on the 1.827-second announcement duration.
+    setTimeout(finish,2300);
+  }catch(error){
+    playStrikeoutSound();
+  }
+}
+
 
 function playSingleHitSound(){
   const s=document.getElementById('singleHitSound');
@@ -3743,8 +3794,7 @@ function playFinalMusic(){
    }catch(e){}
  },700);
 }
-
-async function playStrike3Sequence(){const a=document.getElementById("strike3Announcement");const s=document.getElementById("strikeThreeSound")||document.getElementById("strikeThree")||document.getElementById("strike-three");try{if(a){a.pause();a.currentTime=0;await a.play().catch(()=>{});await new Promise(r=>{a.onended=r;setTimeout(r,1800);});}}catch(e){}if(s){try{s.pause();s.currentTime=0;s.play().catch(()=>{});}catch(e){}}}</script>
+</script>
 
 <audio id="strikeoutSound" preload="auto">
   <source src="strikeout.mp3" type="audio/mpeg">
