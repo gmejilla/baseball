@@ -3705,13 +3705,32 @@ function playPlayBallSound(){
 }
 
 function playStrikeoutSound(){
-  const s=document.getElementById('strikeoutSound');
-  if(!s) return;
+  const ids=['strikeoutSound','strikeoutSound2','strikeoutSound3'];
+  const selectedId=ids[Math.floor(Math.random()*ids.length)];
+  const selected=document.getElementById(selectedId);
+  if(!selected) return;
+
+  ids.forEach(id=>{
+    const audio=document.getElementById(id);
+    if(audio && audio!==selected){
+      try{
+        audio.pause();
+        audio.currentTime=0;
+      }catch(e){}
+    }
+  });
+
   try{
-    s.pause();
-    s.currentTime=0;
-    s.play().catch(()=>{});
-  }catch(e){}
+    selected.pause();
+    selected.currentTime=0;
+    selected.muted=false;
+    selected.volume=1;
+    selected.play().catch(error=>{
+      console.warn('Strikeout sound could not play:',error);
+    });
+  }catch(error){
+    console.warn('Strikeout sound could not play:',error);
+  }
 }
 
 function playStrikeThreeAnnouncementThenStrikeout(){
@@ -3847,6 +3866,12 @@ function playFinalMusic(){
 
 <audio id="strikeoutSound" preload="auto">
   <source src="strikeout.mp3" type="audio/mpeg">
+</audio>
+<audio id="strikeoutSound2" preload="auto">
+  <source src="strikeout2.mp3" type="audio/mpeg">
+</audio>
+<audio id="strikeoutSound3" preload="auto">
+  <source src="strikeout3.mp3" type="audio/mpeg">
 </audio>
 
 
