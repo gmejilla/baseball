@@ -2769,7 +2769,7 @@ html.mobile-page,html.mobile-page body{overflow:auto!important}
       total('home')>total('away')
     ){
       state.gameOver=true;
-      logPlay('Home team takes the lead in the bottom of the final inning. Game over.');
+            logPlay('Home team takes the lead in the bottom of the final inning. Game over.');
       render();
 
       // Walk-off only: allow the celebration sequence to play before
@@ -2922,7 +2922,7 @@ html.mobile-page,html.mobile-page body{overflow:auto!important}
       if(fromOut && state.inning===state.inningsToPlay && total('home')>total('away')){
         logPlay('Home team leads after the top of the final inning. Game over.');
         state.gameOver=true;
-        render();
+                render();
         showFinalResults();
         return;
       }
@@ -2938,6 +2938,7 @@ html.mobile-page,html.mobile-page body{overflow:auto!important}
     }
 
     if(state.inning<state.inningsToPlay){
+      const completedInning=state.inning;
       state.half='top';
       state.inning++;
       render();
@@ -2950,7 +2951,7 @@ html.mobile-page,html.mobile-page body{overflow:auto!important}
     }
 
     state.gameOver=true;
-    render();
+        render();
     showFinalResults();
   }
 
@@ -3704,6 +3705,8 @@ function playPlayBallSound(){
   }catch(e){}
 }
 
+
+
 function playStrikeoutSound(){
   const ids=['strikeoutSound','strikeoutSound2','strikeoutSound3'];
   const selectedId=ids[Math.floor(Math.random()*ids.length)];
@@ -3891,7 +3894,7 @@ function playFinalMusic(){
 
 
 <audio id="playBallSound" preload="auto">
-  <source src="play-ball.mp3" type="audio/mpeg">
+  <source src="play-ball-inning-1.mp3" type="audio/mpeg">
 </audio>
 
 
@@ -3967,11 +3970,67 @@ function playStrikeOneSound(){
 <audio id="strikeTwoSound" preload="auto">
 <source src="strike-two.mp3" type="audio/mpeg">
 </audio>
+<audio id="strikeTwoClapSound" preload="auto">
+<source src="strike-two-clap.mp3" type="audio/mpeg">
+</audio>
 <script>
 function playStrikeTwoSound(){
- const a=document.getElementById('strikeTwoSound');
- if(!a) return;
- try{a.pause();a.currentTime=0;a.play().catch(()=>{});}catch(e){}
+  const first=document.getElementById('strikeTwoSound');
+  const clap=document.getElementById('strikeTwoClapSound');
+
+  if(!first){
+    if(clap){
+      try{
+        clap.pause();
+        clap.currentTime=0;
+        clap.play().catch(()=>{});
+      }catch(e){}
+    }
+    return;
+  }
+
+  let finished=false;
+  const playClap=()=>{
+    if(finished)return;
+    finished=true;
+    first.removeEventListener('ended',playClap);
+    first.removeEventListener('error',playClap);
+
+    if(!clap)return;
+    try{
+      clap.pause();
+      clap.currentTime=0;
+      clap.muted=false;
+      clap.volume=1;
+      clap.play().catch(error=>{
+        console.warn('Strike two clap sound could not play:',error);
+      });
+    }catch(error){
+      console.warn('Strike two clap sound could not play:',error);
+    }
+  };
+
+  try{
+    first.pause();
+    first.currentTime=0;
+    first.muted=false;
+    first.volume=1;
+    first.addEventListener('ended',playClap,{once:true});
+    first.addEventListener('error',playClap,{once:true});
+
+    const attempt=first.play();
+    if(attempt && typeof attempt.catch==='function'){
+      attempt.catch(playClap);
+    }
+
+    // Safety fallback in case the browser does not fire ended.
+    const fallbackMs=(first.duration && isFinite(first.duration))
+      ? Math.ceil(first.duration*1000)+150
+      : 1800;
+    setTimeout(playClap,fallbackMs);
+  }catch(error){
+    playClap();
+  }
 }
 </script>
 
