@@ -2741,6 +2741,28 @@ button:not(:disabled).is-pressed{
   }
   function total(team){return state.runs[team].reduce((a,b)=>a+(Number(b)||0),0)}
 
+  function checkForWalkOffWin(){
+    if(
+      !state.gameOver &&
+      state.half==='bottom' &&
+      state.inning===state.inningsToPlay &&
+      total('home')>total('away')
+    ){
+      state.gameOver=true;
+      logPlay('Home team takes the lead in the bottom of the final inning. Game over.');
+      render();
+
+      // Walk-off only: allow the celebration sequence to play before
+      // showing the final score popup. Other game-ending paths are unchanged.
+      window.setTimeout(()=>{
+        showFinalResults();
+      },3000);
+
+      return true;
+    }
+    return false;
+  }
+
   function saveHistory(){
     state.history.push(JSON.stringify({
       inningsToPlay:state.inningsToPlay,
@@ -2761,6 +2783,7 @@ button:not(:disabled).is-pressed{
   function addRuns(n,deferCheer=false){
     state.runs[battingTeam()][state.inning-1]+=n;
     if(n>0 && !deferCheer) playCheerSound();
+    if(n>0) checkForWalkOffWin();
   }
 
   function advanceExistingRunners(spaces){
@@ -2836,7 +2859,7 @@ button:not(:disabled).is-pressed{
     showLedHitRibbon(type);
     clearCount();
     logPlay(text);
-    render();
+    if(!state.gameOver) render();
   }
 
   function walk(withHistory=true){
