@@ -2263,7 +2263,7 @@ button:not(:disabled).is-pressed{
   content:"" !important;
   position:absolute !important;
   inset:auto !important;
-  left:calc(50% + 16px) !important;
+  left:calc(50% + 36px) !important;
   top:calc(50% + 24px) !important;
   width:686.4px !important;
   height:270.6px !important;
@@ -2276,6 +2276,61 @@ button:not(:disabled).is-pressed{
   background-repeat:no-repeat !important;
   pointer-events:none !important;
   z-index:51 !important;
+}
+</style>
+
+
+<style id="hide-batting-text">
+/* Hide BATTING: HOME / BATTING: VISITOR label; retain home plate. */
+.batting-label,
+.batting-text,
+#battingLabel,
+#battingText {
+  display:none !important;
+}
+</style>
+
+
+<style id="runner-motion-hat-style">
+/* Carry the visitor blue cap with the moving runner, using the same
+   geometry/filter/clip as the stationary cap layer. */
+.runner-motion-sprite{
+  overflow:visible !important;
+}
+.runner-motion-hat{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:78px !important;
+  height:74px !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:contain !important;
+  transform:translate(-50%,-67%) rotate(-45deg) !important;
+  transform-origin:50% 88% !important;
+  clip-path:polygon(9% 0,91% 0,96% 38%,75% 48%,23% 48%,4% 37%) !important;
+  filter:hue-rotate(225deg) saturate(1.45) brightness(.92) !important;
+  opacity:1 !important;
+  pointer-events:none !important;
+  z-index:4 !important;
+}
+</style>
+
+
+<style id="remove-blue-caps-safe">
+.runner-hat-layer,
+.runner-motion-hat {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+</style>
+
+
+<style id="runner-transition-smoothing">
+.runner-motion-sprite{
+  transform:translate(-50%,-67%) !important;
+  transform-origin:50% 88% !important;
 }
 </style>
 
@@ -2371,9 +2426,9 @@ button:not(:disabled).is-pressed{
 
         <div class="home-plate"></div>
 
-        <div class="batting-card">
+        <div class="batting-card" style="display:none !important;">
           <div class="label">BATTING:</div>
-          <div class="batting-name" id="battingDisplay">VISITOR</div>
+          <div class="batting-name" id="battingDisplay" style="display:none !important;">VISITOR</div>
         </div>
       </div>
 
@@ -2897,6 +2952,22 @@ button:not(:disabled).is-pressed{
       sprite.style.backgroundImage=pseudo.backgroundImage;
     }catch(error){}
 
+    // The blue visitor cap is a separate clipped image layer.
+    // Add that exact layer inside the moving sprite so it travels with the head.
+    // Home runners intentionally have no blue overlay, matching the stationary art.
+    if(field.classList.contains('visitor-up')){
+      const hatSource=field.querySelector('.runner-hat-layer');
+      if(hatSource){
+        const hat=document.createElement('div');
+        hat.className='runner-motion-hat';
+        try{
+          const hatStyle=getComputedStyle(hatSource);
+          hat.style.backgroundImage=hatStyle.backgroundImage;
+        }catch(error){}
+        sprite.appendChild(hat);
+      }
+    }
+
     field.appendChild(sprite);
     return sprite;
   }
@@ -2910,6 +2981,11 @@ button:not(:disabled).is-pressed{
     }
     for(let p=startBase+1;p<=targetBase;p++)route.push(p);
     return route;
+  }
+
+  function beginRunnerTransition(){
+    const field=document.querySelector('.field-wrap');
+    if(field)field.classList.add('runner-animation-active');
   }
 
   function animateBaseRunners(oldBases,hitType){
@@ -2934,22 +3010,21 @@ button:not(:disabled).is-pressed{
     const spaces=hitType==='single'?1:hitType==='double'?2:hitType==='triple'?3:4;
     const movements=[];
 
-    // Existing runners.
-    oldBases.forEach((occupied,index)=>{
-      if(!occupied)return;
+    // Existing runners: lead runners move first so trailing runners
+    // do not collide visually with a runner still leaving the next base.
+    for(let index=2;index>=0;index--){
+      if(!oldBases[index])continue;
       const startBase=index+1;
       const targetBase=hitType==='hr'?4:Math.min(4,startBase+spaces);
       movements.push({startBase,targetBase,isHomeRun:hitType==='hr'});
-    });
+    }
 
-    // Batter-runner.
+    // Batter-runner moves last.
     movements.push({
       startBase:0,
       targetBase:hitType==='hr'?4:spaces,
       isHomeRun:hitType==='hr'
     });
-
-    points.field.classList.add('runner-animation-active');
 
     const animations=movements.map((movement,runnerIndex)=>{
       const sprite=createRunnerMotionSprite(points.field);
@@ -2974,8 +3049,8 @@ button:not(:disabled).is-pressed{
 
             const animation=sprite.animate(
               [
-                {left:sprite.style.left,top:sprite.style.top,transform:'translate(-50%,-50%) scale(1)'},
-                {left:destination.x+'px',top:destination.y+'px',transform:'translate(-50%,-50%) scale(1.04)'}
+                {left:sprite.style.left,top:sprite.style.top,transform:'translate(-50%,-67%) scale(1)'},
+                {left:destination.x+'px',top:destination.y+'px',transform:'translate(-50%,-67%) scale(1.04)'}
               ],
               {duration,easing:'cubic-bezier(.2,.72,.25,1)',fill:'forwards'}
             );
@@ -2991,12 +3066,98 @@ button:not(:disabled).is-pressed{
         }));
       });
 
-      return chain.finally(()=>sprite.remove());
+      return chain;
     });
 
-    return Promise.all(animations).finally(()=>{
-      points.field.classList.remove('runner-animation-active');
+    return Promise.all(animations);
+  }
+
+
+  function animateWalkRunners(oldBases){
+    if(!Array.isArray(oldBases))return Promise.resolve();
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      return Promise.resolve();
+    }
+
+    const points=getRunnerFieldPoints();
+    if(!points || !points.home || !points.first || !points.second || !points.third){
+      return Promise.resolve();
+    }
+
+    const positions={
+      0:points.home,
+      1:points.first,
+      2:points.second,
+      3:points.third,
+      4:points.home
+    };
+
+    // A walk advances only forced runners. Move the lead runner first,
+    // then work backward toward the batter to avoid overlap.
+    const movements=[];
+
+    if(oldBases[0] && oldBases[1] && oldBases[2]){
+      movements.push({startBase:3,targetBase:4});
+    }
+    if(oldBases[0] && oldBases[1]){
+      movements.push({startBase:2,targetBase:3});
+    }
+    if(oldBases[0]){
+      movements.push({startBase:1,targetBase:2});
+    }
+
+    // Batter always moves home -> first, and moves last.
+    movements.push({startBase:0,targetBase:1});
+
+    const animations=movements.map((movement,runnerIndex)=>{
+      const sprite=createRunnerMotionSprite(points.field);
+      if(!sprite)return Promise.resolve();
+
+      const start=positions[movement.startBase];
+      const destination=positions[movement.targetBase];
+      sprite.style.left=start.x+'px';
+      sprite.style.top=start.y+'px';
+
+      return new Promise(resolve=>{
+        window.setTimeout(()=>{
+          const dx=destination.x-start.x;
+          const dy=destination.y-start.y;
+          const distance=Math.hypot(dx,dy);
+          const duration=Math.max(280,Math.min(430,distance*2.1));
+
+          const animation=sprite.animate(
+            [
+              {
+                left:start.x+'px',
+                top:start.y+'px',
+                transform:'translate(-50%,-67%) scale(1)'
+              },
+              {
+                left:destination.x+'px',
+                top:destination.y+'px',
+                transform:'translate(-50%,-67%) scale(1.04)'
+              }
+            ],
+            {
+              duration,
+              easing:'cubic-bezier(.2,.72,.25,1)',
+              fill:'forwards'
+            }
+          );
+
+          const finish=()=>{
+            sprite.style.left=destination.x+'px';
+            sprite.style.top=destination.y+'px';
+            try{animation.cancel();}catch(error){}
+            resolve();
+          };
+          animation.onfinish=finish;
+          animation.oncancel=finish;
+        },runnerIndex*65);
+      });
     });
+
+    return Promise.all(animations);
   }
 
   function batterHit(spaces){
@@ -3058,14 +3219,30 @@ button:not(:disabled).is-pressed{
     showLedHitRibbon(type);
     clearCount();
     logPlay(text);
-    if(!state.gameOver) render();
-    animateBaseRunners(runnerAnimationStart,type);
+
+    if(!state.gameOver){
+      beginRunnerTransition();
+
+      animateBaseRunners(runnerAnimationStart,type)
+        .catch(()=>{})
+        .finally(()=>{
+          render();
+          const field=document.querySelector('.field-wrap');
+          if(field){
+            field.querySelectorAll('.runner-motion-sprite').forEach(sprite=>sprite.remove());
+            field.classList.remove('runner-animation-active');
+          }
+        });
+    }
   }
 
   function walk(withHistory=true){
     if(gameIsLocked())return;
     if(withHistory)saveHistory();
+
+    const runnerAnimationStart=[...state.bases];
     let scored=0;
+
     if(!state.bases[0])state.bases[0]=true;
     else if(!state.bases[1])state.bases[1]=true;
     else if(!state.bases[2])state.bases[2]=true;
@@ -3079,7 +3256,20 @@ button:not(:disabled).is-pressed{
     playActionSound('walk',scored);
     clearCount();
     logPlay(`Walk.${scored?' One run scores.':''}`);
-    render();
+
+    beginRunnerTransition();
+
+    // Animate batter to first and only the existing runners who are forced.
+    animateWalkRunners(runnerAnimationStart)
+      .catch(()=>{})
+      .finally(()=>{
+        render();
+        const field=document.querySelector('.field-wrap');
+        if(field){
+          field.querySelectorAll('.runner-motion-sprite').forEach(sprite=>sprite.remove());
+          field.classList.remove('runner-animation-active');
+        }
+      });
   }
 
   function addOut(){
@@ -4577,7 +4767,7 @@ function createGuaranteedScorePopup(title,subtitle,isHomeRun,isGrandSlam){
     position:'fixed',
     left:'50%',
     top:'50%',
-    transform:'translate(-50%,-50%) scale(1)',
+    transform:'translate(-50%,-67%) scale(1)',
     zIndex:'2147483647',
     display:'flex',
     flexDirection:'column',
@@ -4631,7 +4821,7 @@ function createGuaranteedScorePopup(title,subtitle,isHomeRun,isGrandSlam){
       [
         {transform:'translate(-50%,-50%) scale(.82)',opacity:0},
         {transform:'translate(-50%,-50%) scale(1.05)',opacity:1,offset:.32},
-        {transform:'translate(-50%,-50%) scale(1)',opacity:1}
+        {transform:'translate(-50%,-67%) scale(1)',opacity:1}
       ],
       {duration:360,easing:'ease-out',fill:'forwards'}
     );
