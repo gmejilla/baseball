@@ -2218,6 +2218,29 @@ button:not(:disabled).is-pressed{
   }
 }
 
+
+/* v4.2.0 — animated base-runner presentation layer */
+.field-wrap.runner-animation-active .base.occupied::before,
+.field-wrap.runner-animation-active .base.occupied::after{
+  opacity:0 !important;
+}
+.runner-motion-sprite{
+  position:absolute;
+  width:78px;
+  height:74px;
+  z-index:120;
+  pointer-events:none;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  transform:translate(-50%,-50%);
+  filter:drop-shadow(0 4px 4px rgba(0,0,0,.55));
+  will-change:left,top,transform;
+}
+@media (prefers-reduced-motion: reduce){
+  .runner-motion-sprite{display:none !important}
+}
+
 </style>
 </head>
 <body>
@@ -2801,6 +2824,144 @@ button:not(:disabled).is-pressed{
     return scored;
   }
 
+
+  function getRunnerFieldPoints(){
+    const field=document.querySelector('.field-wrap');
+    if(!field)return null;
+
+    const fieldRect=field.getBoundingClientRect();
+    const pointFor=el=>{
+      if(!el)return null;
+      const r=el.getBoundingClientRect();
+      return {
+        x:r.left-fieldRect.left+r.width/2,
+        y:r.top-fieldRect.top+r.height/2
+      };
+    };
+
+    return {
+      field,
+      home:pointFor(field.querySelector('.home-plate')),
+      first:pointFor(field.querySelector('.base.first')),
+      second:pointFor(field.querySelector('.base.second')),
+      third:pointFor(field.querySelector('.base.third'))
+    };
+  }
+
+  function createRunnerMotionSprite(field){
+    const source=field.querySelector('.base.first');
+    if(!source)return null;
+
+    const sprite=document.createElement('div');
+    sprite.className='runner-motion-sprite';
+
+    try{
+      const pseudo=getComputedStyle(source,'::after');
+      sprite.style.backgroundImage=pseudo.backgroundImage;
+    }catch(error){}
+
+    field.appendChild(sprite);
+    return sprite;
+  }
+
+  function runnerRoute(startBase,targetBase,isHomeRun=false){
+    // Positions are 0=home, 1=first, 2=second, 3=third, 4=home scored.
+    const route=[];
+    if(isHomeRun){
+      for(let p=startBase+1;p<=4;p++)route.push(p);
+      return route;
+    }
+    for(let p=startBase+1;p<=targetBase;p++)route.push(p);
+    return route;
+  }
+
+  function animateBaseRunners(oldBases,hitType){
+    if(!Array.isArray(oldBases))return Promise.resolve();
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      return Promise.resolve();
+    }
+
+    const points=getRunnerFieldPoints();
+    if(!points || !points.home || !points.first || !points.second || !points.third){
+      return Promise.resolve();
+    }
+
+    const positions={
+      0:points.home,
+      1:points.first,
+      2:points.second,
+      3:points.third,
+      4:points.home
+    };
+
+    const spaces=hitType==='single'?1:hitType==='double'?2:hitType==='triple'?3:4;
+    const movements=[];
+
+    // Existing runners.
+    oldBases.forEach((occupied,index)=>{
+      if(!occupied)return;
+      const startBase=index+1;
+      const targetBase=hitType==='hr'?4:Math.min(4,startBase+spaces);
+      movements.push({startBase,targetBase,isHomeRun:hitType==='hr'});
+    });
+
+    // Batter-runner.
+    movements.push({
+      startBase:0,
+      targetBase:hitType==='hr'?4:spaces,
+      isHomeRun:hitType==='hr'
+    });
+
+    points.field.classList.add('runner-animation-active');
+
+    const animations=movements.map((movement,runnerIndex)=>{
+      const sprite=createRunnerMotionSprite(points.field);
+      if(!sprite)return Promise.resolve();
+
+      const start=positions[movement.startBase];
+      sprite.style.left=start.x+'px';
+      sprite.style.top=start.y+'px';
+
+      const route=runnerRoute(movement.startBase,movement.targetBase,movement.isHomeRun);
+      let chain=Promise.resolve();
+
+      route.forEach((positionNumber,stepIndex)=>{
+        const destination=positions[positionNumber];
+        chain=chain.then(()=>new Promise(resolve=>{
+          const delay=runnerIndex*55;
+          window.setTimeout(()=>{
+            const dx=destination.x-parseFloat(sprite.style.left);
+            const dy=destination.y-parseFloat(sprite.style.top);
+            const distance=Math.hypot(dx,dy);
+            const duration=Math.max(260,Math.min(430,distance*2.1));
+
+            const animation=sprite.animate(
+              [
+                {left:sprite.style.left,top:sprite.style.top,transform:'translate(-50%,-50%) scale(1)'},
+                {left:destination.x+'px',top:destination.y+'px',transform:'translate(-50%,-50%) scale(1.04)'}
+              ],
+              {duration,easing:'cubic-bezier(.2,.72,.25,1)',fill:'forwards'}
+            );
+
+            animation.onfinish=()=>{
+              sprite.style.left=destination.x+'px';
+              sprite.style.top=destination.y+'px';
+              animation.cancel();
+              resolve();
+            };
+            animation.oncancel=resolve;
+          },stepIndex===0?delay:0);
+        }));
+      });
+
+      return chain.finally(()=>sprite.remove());
+    });
+
+    return Promise.all(animations).finally(()=>{
+      points.field.classList.remove('runner-animation-active');
+    });
+  }
+
   function batterHit(spaces){
     const old=[...state.bases];
     const next=[false,false,false];
@@ -2823,6 +2984,7 @@ button:not(:disabled).is-pressed{
     if(gameIsLocked())return;
     saveHistory();
     const team=battingTeam();
+    const runnerAnimationStart=[...state.bases];
     state.hits[team]++;
     let text='';
     let scored=0;
@@ -2860,6 +3022,7 @@ button:not(:disabled).is-pressed{
     clearCount();
     logPlay(text);
     if(!state.gameOver) render();
+    animateBaseRunners(runnerAnimationStart,type);
   }
 
   function walk(withHistory=true){
