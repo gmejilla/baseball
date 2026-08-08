@@ -2334,6 +2334,20 @@ button:not(:disabled).is-pressed{
 }
 </style>
 
+
+<style id="center-now-batting-popup">
+.now-batting-screen-centered{
+  position:fixed !important;
+  left:50% !important;
+  top:50% !important;
+  right:auto !important;
+  bottom:auto !important;
+  transform:translate(-50%,-50%) !important;
+  margin:0 !important;
+  z-index:10050 !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -4987,5 +5001,28 @@ function showHomeRun(runs){
 }
 </script>
 
-<audio id="strike3Announcement" preload="auto"><source src="strike-3-your-out.mp4" type="audio/mp4"></audio></body>
+<audio id="strike3Announcement" preload="auto"><source src="strike-3-your-out.mp4" type="audio/mp4"></audio>
+<script id="center-now-batting-popup-script">
+document.addEventListener('DOMContentLoaded',()=>{
+  const markNowBatting=()=>{
+    document.querySelectorAll('body *').forEach(el=>{
+      if(el.children.length===0 && /NOW\s+BATTING/i.test(el.textContent||'')){
+        let target=el;
+        for(let i=0;i<4 && target.parentElement;i++){
+          const p=target.parentElement;
+          const cs=getComputedStyle(p);
+          if(cs.position==='fixed' || cs.position==='absolute' || p.className.toString().toLowerCase().includes('popup') || p.className.toString().toLowerCase().includes('banner')){
+            target=p;
+          }
+        }
+        target.classList.add('now-batting-screen-centered');
+      }
+    });
+  };
+  markNowBatting();
+  new MutationObserver(markNowBatting).observe(document.body,{childList:true,subtree:true});
+});
+</script>
+
+</body>
 </html>
