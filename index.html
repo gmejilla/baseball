@@ -4842,6 +4842,132 @@ function showRunScored(runs){
   );
 }
 
+
+function launchHomeRunBannerFireworks(runs){
+  const fw=document.getElementById('fireworks');
+  if(!fw) return;
+
+  const palettes=[
+    ['#ffd429','#ff3b2e','#42c6ff','#6dff66','#ffffff','#ff79dc'],
+    ['#ffd429','#ffffff','#ff8a00','#42c6ff','#ff3b2e'],
+    ['#ffffff','#ffe97a','#ffb000','#ff5b00','#ffd429']
+  ];
+
+  const burst=(x,y,count,radiusMin,radiusMax,duration,palette)=>{
+    for(let i=0;i<count;i++){
+      const s=document.createElement('span');
+      s.className='spark';
+      s.style.left=x+'vw';
+      s.style.top=y+'vh';
+      s.style.background=palette[Math.floor(Math.random()*palette.length)];
+
+      const angle=(Math.PI*2*i/count)+(Math.random()*.14);
+      const distance=radiusMin+Math.random()*(radiusMax-radiusMin);
+      const size=6+Math.random()*8;
+
+      s.style.width=size+'px';
+      s.style.height=size+'px';
+      s.style.setProperty('--x',Math.cos(angle)*distance+'px');
+      s.style.setProperty('--y',Math.sin(angle)*distance+'px');
+      s.style.setProperty('--duration',duration+'ms');
+      s.style.boxShadow=Math.random()>.5?'0 0 10px currentColor':'none';
+
+      fw.appendChild(s);
+      window.setTimeout(()=>s.remove(),duration+650);
+    }
+  };
+
+  const tier=Math.max(1,Math.min(4,Number(runs)||1));
+
+  // Increasing celebration levels:
+  // 1 run: light celebration
+  // 2 runs: medium
+  // 3 runs: large
+  // 4 runs: grand finale
+  const configs={
+    1:{
+      bursts:[[22,24],[50,15],[78,25]],
+      particles:30,
+      min:65,
+      max:155,
+      duration:950,
+      spacing:150
+    },
+    2:{
+      bursts:[[14,22],[35,14],[58,20],[82,15],[27,48],[70,46]],
+      particles:40,
+      min:75,
+      max:190,
+      duration:1100,
+      spacing:125
+    },
+    3:{
+      bursts:[[8,20],[24,12],[42,22],[58,11],[76,20],[92,14],[18,48],[38,42],[62,48],[82,40]],
+      particles:50,
+      min:90,
+      max:235,
+      duration:1250,
+      spacing:105
+    }
+  };
+
+  if(tier<4){
+    const c=configs[tier];
+    c.bursts.forEach(([x,y],index)=>{
+      window.setTimeout(()=>{
+        burst(
+          x,y,c.particles,c.min,c.max,c.duration,
+          palettes[index%palettes.length]
+        );
+      },index*c.spacing);
+    });
+    return;
+  }
+
+  // Grand Slam: multi-wave finale surrounding the banner.
+  const opening=[
+    [6,18],[20,10],[36,20],[50,8],[64,20],[80,10],[94,18],
+    [12,42],[30,34],[48,44],[66,34],[86,42],
+    [8,68],[26,58],[46,68],[66,58],[90,66]
+  ];
+
+  opening.forEach(([x,y],index)=>{
+    window.setTimeout(()=>{
+      burst(
+        x,y,
+        62,
+        105,
+        300,
+        1450,
+        palettes[index%palettes.length]
+      );
+    },index*70);
+  });
+
+  // Two extra finale waves.
+  [900,1650].forEach((delay,wave)=>{
+    window.setTimeout(()=>{
+      const finale=[
+        [12,24],[32,14],[50,22],[68,14],[88,24],
+        [24,54],[50,48],[76,54]
+      ];
+      finale.forEach(([x,y],index)=>{
+        window.setTimeout(()=>{
+          burst(
+            x,y,
+            72,
+            125,
+            360,
+            1550,
+            palettes[(index+wave)%palettes.length]
+          );
+        },index*90);
+      });
+    },delay);
+  });
+}
+
+
 function showHomeRun(runs){
   playCheerSound();
   const isGrandSlam=runs===4;
@@ -4853,7 +4979,11 @@ function showHomeRun(runs){
     title='★ GRAND SLAM ★';
     subtitle='BASES CLEARED!';
   }
+
   createGuaranteedScorePopup(title,subtitle,true,isGrandSlam);
+
+  // Fireworks scale with the number of runs scored.
+  launchHomeRunBannerFireworks(runs);
 }
 </script>
 
