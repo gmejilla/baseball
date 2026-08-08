@@ -3274,6 +3274,7 @@ html.mobile-page,html.mobile-page body{overflow:auto!important}
     if(scored>0) showRunScored(scored);
 
     playActionSound('walk',scored);
+    showLedHitRibbon('walk');
     clearCount();
     logPlay(`Walk.${scored?' One run scores.':''}`);
 
@@ -4530,7 +4531,7 @@ class BaseballLedRibbon extends HTMLElement {
   _render(){
     this.shadowRoot.innerHTML=`
       <style>
-        :host{display:block;width:100%;--single:#ffd52b;--double:#28baff;--triple:#d95cff;--homerun:#ff4435;--walk:#63ff35;--strikeout:#ff9c27;--out:#ff4033}
+        :host{display:block;width:100%;--single:#ffd52b;--double:#28baff;--triple:#d95cff;--homerun:#ff4435;--walk:#ff9c27;--strikeout:#ff9c27;--out:#ff4033}
         *{box-sizing:border-box}
         .shell{padding:8px;border:3px solid #303740;border-radius:14px;background:#05070a;box-shadow:0 0 0 3px #0b0e12,inset 0 0 30px #000}
         .board{position:relative;width:100%;aspect-ratio:16/2.9;min-height:140px;overflow:hidden;border-radius:8px;background:radial-gradient(circle,rgba(21,31,39,.48) 1px,transparent 1.45px),#010203;background-size:7px 7px;contain:strict;isolation:isolate;transform:translateZ(0)}
@@ -4663,7 +4664,7 @@ class BaseballLedRibbon extends HTMLElement {
   }
 
   async _flashBoard(token){if(token!==this._token)return;await this._animate(this._flash,[{opacity:0},{opacity:1,offset:.28},{opacity:0}],{duration:145,easing:'ease-out'})}
-  async _showResult(type,token){if(token!==this._token)return;const labels={single:'SINGLE',double:'DOUBLE',triple:'TRIPLE',homerun:'HOME RUN',walk:'WALK',strikeout:'STRIKE OUT',out:'OUT'};this._ball.style.opacity='0';this._result.textContent=labels[type];this._result.className=`result ${type}`;await this._animate(this._result,[{opacity:0,transform:'translate3d(0,0,0) scale(.86)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)'}],{duration:150,easing:'cubic-bezier(.2,.8,.2,1)'})}
+  async _showResult(type,token){if(token!==this._token)return;const labels={single:'SINGLE',double:'DOUBLE',triple:'TRIPLE',homerun:'HOME RUN',walk:'WALK',strikeout:'STRIKE OUT',walk:'WALK',out:'OUT'};this._ball.style.opacity='0';this._result.textContent=labels[type];this._result.className=`result ${type}`;await this._animate(this._result,[{opacity:0,transform:'translate3d(0,0,0) scale(.86)'},{opacity:1,transform:'translate3d(0,0,0) scale(1)'}],{duration:150,easing:'cubic-bezier(.2,.8,.2,1)'})}
 
   async _animatePitch(token){
     const sx=.94,sy=.29,cx=.30,cy=.43,mx=.58,my=.35;
@@ -4676,9 +4677,9 @@ class BaseballLedRibbon extends HTMLElement {
   }
   async _animateContact(token){if(token!==this._token)return;await this._setSprite('contact');this._ball.style.opacity='1';await this._animate(this._burst,[{opacity:0,transform:'translate3d(-50%,-50%,0) scale(.2) rotate(0deg)'},{opacity:1,transform:'translate3d(-50%,-50%,0) scale(1.1) rotate(12deg)',offset:.42},{opacity:0,transform:'translate3d(-50%,-50%,0) scale(1.8) rotate(24deg)'}],{duration:220,easing:'ease-out'})}
   async _animateFlight(type,token){if(token!==this._token)return;const paths={single:[.58,-.18],double:[.66,-.29],triple:[.72,-.38],homerun:[.76,-.62],out:[.58,.12]};const [xf,yf]=paths[type];this._ball.style.left='30%';this._ball.style.top='43%';this._ball.style.opacity='1';this._ball.style.transform='translate3d(0,0,0)';await this._animate(this._ball,[{transform:'translate3d(0,0,0)',opacity:1},{transform:`translate3d(${this._w*xf*.55}px,${this._h*yf*.35}px,0)`,opacity:1,offset:.5},{transform:`translate3d(${this._w*xf}px,${this._h*yf}px,0)`,opacity:0}],{duration:560,easing:'cubic-bezier(.18,.72,.22,1)'})}
-  async _playHit(type,token){await this._setSprite('setup');if(!(await this._animatePitch(token)))return;await this._animateContact(token);await this._animateFlight(type,token);await this._flashBoard(token);await this._showResult(type,token)}
-  async _playWalk(token){await this._setSprite('setup');this._batter.style.opacity='1';this._ball.style.opacity='1';const ps=[[this._w*.12,-this._h*.05],[this._w*.20,this._h*.08],[this._w*.29,-this._h*.03],[this._w*.38,this._h*.10]];for(const [x,y] of ps){if(token!==this._token)return;this._ball.style.transform='translate3d(0,0,0)';await this._animate(this._ball,[{opacity:0,transform:'translate3d(0,0,0)'},{opacity:1,transform:`translate3d(${x}px,${y}px,0)`,offset:.25},{opacity:0,transform:`translate3d(${x}px,${y}px,0)`}],{duration:210,easing:'linear'})}await this._flashBoard(token);await this._showResult('walk',token)}
-  async _playStrikeout(token){await this._setSprite('setup');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:180});if(token!==this._token)return;await this._setSprite('load');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:190});if(token!==this._token)return;await this._setSprite('swing');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:250});if(token!==this._token)return;await this._flashBoard(token);await this._showResult('strikeout',token)}
+  async _playHit(type,token){await this._setSprite('setup');if(!(await this._animatePitch(token)))return;await this._animateContact(token);await this._animateFlight(type,token);await this._showResult(type,token)}
+  async _playWalk(token){this._batter.style.opacity='0';this._ball.style.opacity='1';const ps=[[this._w*.12,-this._h*.05],[this._w*.20,this._h*.08],[this._w*.29,-this._h*.03],[this._w*.38,this._h*.10]];for(const [x,y] of ps){if(token!==this._token)return;this._ball.style.transform='translate3d(0,0,0)';await this._animate(this._ball,[{opacity:0,transform:'translate3d(0,0,0)'},{opacity:1,transform:`translate3d(${x}px,${y}px,0)`,offset:.25},{opacity:0,transform:`translate3d(${x}px,${y}px,0)`}],{duration:210,easing:'linear'})}await this._showResult('walk',token)}
+  async _playStrikeout(token){await this._setSprite('setup');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:180});if(token!==this._token)return;await this._setSprite('load');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:190});if(token!==this._token)return;await this._setSprite('swing');await this._animate(this._batter,[{opacity:1},{opacity:1}],{duration:250});if(token!==this._token)return;await this._showResult('strikeout',token)}
 }
 
 if(!customElements.get('baseball-led-ribbon')) customElements.define('baseball-led-ribbon',BaseballLedRibbon);
@@ -4715,6 +4716,7 @@ async function showLedHitRibbon(hitType){
     double:'double',
     triple:'triple',
     hr:'homerun',
+    walk:'walk',
     strikeout:'strikeout'
   };
   const animation=animationMap[hitType];
