@@ -3342,8 +3342,11 @@ button:not(:disabled).is-pressed{
 
   function addBall(){
     if(gameIsLocked())return;
-    playActionSound('ball');
-    saveHistory();state.balls++;
+    saveHistory();
+    state.balls++;
+    try{
+      new Audio(state.balls>=4?'umpire-ball4.mp3':'umpire-ball.mp3').play().catch(()=>{});
+    }catch(error){}
     if(state.balls>=4){walk(false);toast('WALK');return}
     render();
   }
