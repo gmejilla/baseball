@@ -2918,6 +2918,33 @@ header.hero{
 }
 </style>
 
+
+
+<style id="score-digit-vertical-centering">
+/*
+  Keep the black score boxes in their original position.
+  Center only the rendered score glyphs vertically inside the outline.
+*/
+.main-score .score-number{
+  position:static !important;
+  top:auto !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:3px 4px 1px !important;
+  line-height:1 !important;
+}
+</style>
+
+
+<style id="inning-number-half-gap-2px">
+/* Add 2px spacing between the inning number and TOP/BOTTOM text. */
+.main-score .inning-panel .half{
+  margin-top:2px !important;
+}
+</style>
+
 </head>
 <body>
 
