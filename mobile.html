@@ -3309,7 +3309,7 @@ html.mobile-page,html.mobile-page body{overflow:auto!important}
 
   function addOut(){
     if(gameIsLocked())return;
-    playActionSound('out');
+    try{new Audio('out.mp3').play().catch(()=>{});}catch(error){};
     saveHistory();state.outs++;clearCount();logPlay('Out recorded.');
     if(state.outs>=3)changeSides(true);else render();
   }
