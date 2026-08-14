@@ -3791,9 +3791,6 @@ header.hero{
     let text='';
     let scored=0;
 
-    // Every hit gets one bat crack, including hits that score runs.
-    playSingleHitSound();
-
     if(type==='single'){
       scored=batterHit(1);
       text=`Single.${scored?` ${scored} run${scored===1?'':'s'} score.`:' Runner to first.'}`;
@@ -3820,7 +3817,6 @@ header.hero{
     }
 
     playActionSound(type,scored);
-    showLedHitRibbon(type);
     clearCount();
     logPlay(text);
 
@@ -3836,7 +3832,16 @@ header.hero{
             field.querySelectorAll('.runner-motion-sprite').forEach(sprite=>sprite.remove());
             field.classList.remove('runner-animation-active');
           }
+
+          // Start the LED ribbon only after every runner has finished moving
+          // and the final base state has been rendered. Ribbon timing itself
+          // remains exactly the same once it begins.
+          playSingleHitSound();
+          showLedHitRibbon(type);
         });
+    }else{
+      playSingleHitSound();
+      showLedHitRibbon(type);
     }
   }
 
@@ -3858,7 +3863,6 @@ header.hero{
     if(scored>0) showRunScored(scored);
 
     playActionSound('walk',scored);
-    showLedHitRibbon('walk');
     clearCount();
     logPlay(`Walk.${scored?' One run scores.':''}`);
 
@@ -3874,6 +3878,10 @@ header.hero{
           field.querySelectorAll('.runner-motion-sprite').forEach(sprite=>sprite.remove());
           field.classList.remove('runner-animation-active');
         }
+
+        // WALK ribbon begins only after all forced runners are settled.
+        // Existing WALK ribbon duration/sound timing after this point is unchanged.
+        showLedHitRibbon('walk');
       });
   }
 
