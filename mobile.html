@@ -3357,11 +3357,11 @@ header.hero{
     <div class="team-name-fields">
       <div class="team-name-field">
         <label for="newAwayName">VISITOR TEAM</label>
-        <input id="newAwayName" class="team-name-entry" maxlength="18" value="VISITOR" autocomplete="off">
+        <input id="newAwayName" class="team-name-entry" type="text" maxlength="18" value="VISITOR" autocomplete="organization" autocorrect="on" autocapitalize="words" spellcheck="true" enterkeyhint="next">
       </div>
       <div class="team-name-field">
         <label for="newHomeName">HOME TEAM</label>
-        <input id="newHomeName" class="team-name-entry" maxlength="18" value="HOME" autocomplete="off">
+        <input id="newHomeName" class="team-name-entry" type="text" maxlength="18" value="HOME" autocomplete="organization" autocorrect="on" autocapitalize="words" spellcheck="true" enterkeyhint="done">
       </div>
     </div>
     <button class="team-name-confirm" id="teamNameConfirmBtn" aria-label="Play Ball"><span class="play-ball-icon baseball" aria-hidden="true">⚾</span><span class="play-ball-text">PLAY BALL!</span><span class="play-ball-icon baseball" aria-hidden="true">⚾</span></button>
@@ -4588,6 +4588,16 @@ header.hero{
     modal.setAttribute('aria-hidden','true');
   }
 
+  function commitTeamNamesFromIOS(){
+    const active=document.activeElement;
+    if(active && (active.id==='newAwayName' || active.id==='newHomeName')){
+      active.blur();
+    }
+    // iPhone/iPad predictive-text selections can finish on blur/compositionend.
+    // Defer one frame so the committed suggestion is present in .value.
+    requestAnimationFrame(()=>setTimeout(confirmTeamNames,0));
+  }
+
   function confirmTeamNames(){
     if(!state.worldSeriesGame)playPlayBallSound();
     stopNewGameMusic();
@@ -4994,18 +5004,25 @@ header.hero{
   $('#resetBtn').addEventListener('click',resetGame);
   $('#bottomResetBtn').addEventListener('click',resetGame);
 
-  $('#teamNameConfirmBtn').addEventListener('click',confirmTeamNames);
+  $('#teamNameConfirmBtn').addEventListener('click',event=>{
+    event.preventDefault();
+    commitTeamNamesFromIOS();
+  });
   $('#newAwayName').addEventListener('keydown',event=>{
     if(event.key==='Enter'){
       event.preventDefault();
-      $('#newHomeName').focus();
-      $('#newHomeName').select();
+      const field=event.currentTarget;
+      field.blur();
+      requestAnimationFrame(()=>{
+        $('#newHomeName').focus();
+        $('#newHomeName').select();
+      });
     }
   });
   $('#newHomeName').addEventListener('keydown',event=>{
     if(event.key==='Enter'){
       event.preventDefault();
-      confirmTeamNames();
+      commitTeamNamesFromIOS();
     }
   });
 
