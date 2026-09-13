@@ -3471,7 +3471,7 @@ header.hero{
     if(
       !state.gameOver &&
       state.half==='bottom' &&
-      state.inning===state.inningsToPlay &&
+      state.inning>=state.inningsToPlay &&
       total('home')>total('away')
     ){
       state.gameOver=true;
@@ -3507,7 +3507,9 @@ header.hero{
 
   function clearCount(){state.balls=0;state.strikes=0}
   function addRuns(n,deferCheer=false){
-    state.runs[battingTeam()][state.inning-1]+=n;
+    const team=battingTeam();
+    while(state.runs[team].length<state.inning) state.runs[team].push(0);
+    state.runs[team][state.inning-1]+=n;
     if(n>0 && !deferCheer) playCheerSound();
     if(n>0) checkForWalkOffWin();
   }
@@ -3909,7 +3911,7 @@ header.hero{
     if(state.half==='top'){
       // In the final scheduled inning, the home team does not bat if it is
       // already ahead after the visiting team records its third out.
-      if(fromOut && state.inning===state.inningsToPlay && total('home')>total('away')){
+      if(fromOut && state.inning>=state.inningsToPlay && total('home')>total('away')){
         logPlay('Home team leads after the top of the final inning. Game over.');
         state.gameOver=true;
                 render();
@@ -3940,8 +3942,27 @@ header.hero{
       return;
     }
 
+    if(total('home')===total('away')){
+      const completedInning=state.inning;
+      state.half='top';
+      state.inning++;
+
+      while(state.runs.home.length<state.inning) state.runs.home.push(0);
+      while(state.runs.away.length<state.inning) state.runs.away.push(0);
+
+      logPlay(`Game tied after ${completedInning}. Extra inning ${state.inning} begins.`);
+      render();
+
+      if(ledCompletion){
+        try{ await ledCompletion; }catch(error){}
+      }
+      showAtBatPopup();
+      setTimeout(()=>playRandomBaseballCharge(),500);
+      return;
+    }
+
     state.gameOver=true;
-        render();
+    render();
     showFinalResults();
   }
 
@@ -4018,30 +4039,42 @@ header.hero{
     render();
   }
 
+  function displayedInnings(){
+    return Math.max(
+      state.inningsToPlay,
+      state.inning,
+      state.runs.home.length,
+      state.runs.away.length
+    );
+  }
+
   function buildInningHeaders(){
+    const count=displayedInnings();
     const headerGrid=$('#inningHeaderGrid');
-    headerGrid.style.gridTemplateColumns=`repeat(${state.inningsToPlay},1fr)`;
+    headerGrid.style.gridTemplateColumns=`repeat(${count},1fr)`;
     headerGrid.innerHTML='';
-    for(let i=1;i<=state.inningsToPlay;i++){
+    for(let i=1;i<=count;i++){
       const cell=document.createElement('div');
       cell.textContent=i;
       cell.style.display='grid';
       cell.style.placeItems='center';
-      cell.style.borderRight=i<state.inningsToPlay?'2px solid #36443d':'0';
+      cell.style.borderRight=i<count?'2px solid #36443d':'0';
       cell.style.height='46px';
+      if(i>state.inningsToPlay) cell.title='Extra inning';
       headerGrid.appendChild(cell);
     }
-    $('#inningHeaders').colSpan=state.inningsToPlay;
-    $('#awayInningsCell').colSpan=state.inningsToPlay;
-    $('#homeInningsCell').colSpan=state.inningsToPlay;
+    $('#inningHeaders').colSpan=count;
+    $('#awayInningsCell').colSpan=count;
+    $('#homeInningsCell').colSpan=count;
   }
 
   function buildInnings(team,containerId){
+    const count=displayedInnings();
     const wrap=$(containerId);
     wrap.innerHTML='';
-    wrap.style.gridTemplateColumns=`repeat(${state.inningsToPlay},1fr)`;
+    wrap.style.gridTemplateColumns=`repeat(${count},1fr)`;
 
-    for(let i=0;i<state.inningsToPlay;i++){
+    for(let i=0;i<count;i++){
       const input=document.createElement('input');
       input.type='number';
       input.min='0';
@@ -4565,7 +4598,7 @@ header.hero{
     const savedInnings=Number(savedState.inningsToPlay);
     state.inningsToPlay=[3,6,9].includes(savedInnings)?savedInnings:9;
     state.gameOver=Boolean(savedState.gameOver);
-    state.inning = Math.min(state.inningsToPlay, Math.max(1, Number(savedState.inning) || 1));
+    state.inning = Math.max(1, Number(savedState.inning) || 1);
     state.half = savedState.half === 'bottom' ? 'bottom' : 'top';
     state.balls = Math.min(3, Math.max(0, Number(savedState.balls) || 0));
     state.strikes = Math.min(2, Math.max(0, Number(savedState.strikes) || 0));
@@ -4579,7 +4612,12 @@ header.hero{
       const savedRuns = savedState.runs && Array.isArray(savedState.runs[team])
         ? savedState.runs[team]
         : [];
-      state.runs[team] = Array.from({length:state.inningsToPlay},(_,i) =>
+      const savedLength=Math.max(
+        state.inningsToPlay,
+        state.inning,
+        savedRuns.length
+      );
+      state.runs[team] = Array.from({length:savedLength},(_,i) =>
         Math.max(0, Number(savedRuns[i]) || 0)
       );
       state.hits[team] = Math.max(0, Number(savedState.hits && savedState.hits[team]) || 0);
