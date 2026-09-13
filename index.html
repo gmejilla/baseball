@@ -5023,7 +5023,20 @@ header.hero{
   $$('.innings-choice').forEach(button=>{
     button.addEventListener('click',()=>{
       pendingWorldSeriesMode=Boolean($('#worldSeriesModeToggle')?.checked);
-      if(pendingWorldSeriesMode)playPlayBallSound();
+
+      if(pendingWorldSeriesMode){
+        const existingSeries=loadWorldSeries();
+        const seriesInProgress=Boolean(
+          existingSeries &&
+          existingSeries.active &&
+          !existingSeries.complete &&
+          Array.isArray(existingSeries.games) &&
+          existingSeries.games.length>0
+        );
+
+        if(seriesInProgress)playPlayBallSound();
+      }
+
       startNewGameMusic();
       startNewGame(pendingWorldSeriesMode?9:Number(button.dataset.innings));
     });
