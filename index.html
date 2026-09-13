@@ -942,12 +942,12 @@
       border:5px solid #fff;
       outline:3px solid #111;
       border-radius:12px;
-      background:linear-gradient(#777,#333);
+      background:linear-gradient(#ef342e,#a20b08);
       color:#fff;
       font:900 22px/1 Arial,sans-serif;
       letter-spacing:1px;
       text-shadow:2px 2px 0 #000;
-      box-shadow:0 7px 0 #111;
+      box-shadow:0 7px 0 #111,var(--bevel);
       cursor:pointer;
       touch-action:manipulation;
       box-sizing:border-box;
@@ -2945,6 +2945,162 @@ header.hero{
 }
 </style>
 
+
+<style id="world-series-mode-styles">
+.world-series-panel{
+  margin-top:16px;
+  background:linear-gradient(#03160e,#000);
+  border:5px solid #315d48;
+  border-radius:14px;
+  box-shadow:var(--bevel);
+  overflow:hidden;
+  color:#fff;
+}
+.world-series-panel[hidden]{display:none !important;}
+.world-series-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:6px 12px;
+  background:linear-gradient(#03160e,#000);
+  color:var(--yellow);
+  border-bottom:2px solid #0f5034;
+}
+.world-series-title{
+  font-weight:900;
+  font-size:20px;
+  letter-spacing:.04em;
+  color:var(--yellow);
+}
+.world-series-subtitle{
+  font-weight:800;
+  font-size:14px;
+  color:#fff;
+  opacity:.9;
+}
+.world-series-summary{
+  padding:10px 14px;
+  font-family:"Courier New",monospace;
+  font-weight:900;
+  font-size:clamp(16px,2.3vw,22px);
+  color:#fff;
+  border-bottom:2px solid #0f5034;
+  text-align:center;
+}
+.world-series-table-wrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  background:linear-gradient(#03160e,#000);
+}
+.world-series-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:690px;
+  font-family:"Courier New",monospace;
+  font-weight:800;
+  color:#fff;
+}
+.world-series-table th,.world-series-table td{
+  padding:9px 8px;
+  border-right:1px solid #0f5034;
+  border-bottom:1px dashed rgba(255,255,255,.12);
+  text-align:center;
+}
+.world-series-table th{
+  background:#062b1d;
+  color:var(--yellow);
+  font-size:13px;
+  letter-spacing:.04em;
+  border-bottom:2px solid #0f5034;
+}
+.world-series-table td{font-size:14px;}
+.world-series-table tbody tr:nth-child(even){background:rgba(255,255,255,.025);}
+.world-series-table tr:last-child td{border-bottom:0;}
+.world-series-table th:last-child,.world-series-table td:last-child{border-right:0;}
+.world-series-empty{
+  padding:16px;
+  text-align:center;
+  font-family:"Courier New",monospace;
+  font-weight:800;
+  color:#fff;
+}
+.world-series-actions{
+  display:flex;
+  justify-content:flex-end;
+  padding:10px 12px;
+  border-top:2px solid #0f5034;
+  background:linear-gradient(#062b1d,#02170f);
+}
+.world-series-reset{
+  min-height:42px;
+  padding:8px 14px;
+  border:2px solid #315d48;
+  border-radius:8px;
+  background:linear-gradient(#183d2d,#0a281c);
+  color:var(--yellow);
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:var(--bevel);
+}
+.world-series-option{
+  margin-top:16px;
+  padding:14px;
+  border:3px solid var(--yellow);
+  border-radius:12px;
+  background:linear-gradient(180deg,#0f5130 0%,#063a23 100%);
+  text-align:left;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 5px 0 #021e14;
+}
+.world-series-option label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  font-weight:900;
+  font-size:18px;
+  line-height:1.15;
+  cursor:pointer;
+  text-shadow:2px 2px 0 rgba(0,0,0,.65);
+}
+.world-series-option input{
+  width:23px;
+  height:23px;
+  accent-color:var(--yellow);
+  flex:0 0 auto;
+}
+.world-series-popup-status{
+  margin-top:10px;
+  padding:10px 12px;
+  border:2px solid rgba(255,225,46,.75);
+  border-radius:8px;
+  background:rgba(0,0,0,.28);
+  color:var(--yellow);
+  font-size:14px;
+  font-weight:900;
+  line-height:1.2;
+  text-align:center;
+  letter-spacing:.4px;
+  text-shadow:1px 1px 0 #000;
+}
+.world-series-option-note{
+  margin-top:8px;
+  padding-left:33px;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.35;
+  color:var(--yellow);
+  text-shadow:1px 1px 0 rgba(0,0,0,.55);
+}
+.final-series-status{margin-top:12px;font-size:clamp(16px,3vw,24px);font-weight:900;text-align:center;}
+@media(max-width:560px){
+  .world-series-header{align-items:flex-start;}
+  .world-series-actions{justify-content:stretch;}
+  .world-series-reset{width:100%;}
+}
+</style>
+
 </head>
 <body>
 
@@ -3118,6 +3274,32 @@ header.hero{
       <div class="autosave">SCORE SAVED AUTOMATICALLY</div>
     </section>
 
+
+    <section class="world-series-panel" id="worldSeriesPanel" hidden>
+      <div class="world-series-header">
+        <div>
+          <div class="world-series-title">WORLD SERIES</div>
+          <div class="world-series-subtitle">BEST OF 7 · FIRST TO 4 WINS</div>
+        </div>
+        <div class="world-series-subtitle" id="worldSeriesGameLabel">GAME 1</div>
+      </div>
+      <div class="world-series-summary" id="worldSeriesSummary"></div>
+      <div class="world-series-table-wrap">
+        <table class="world-series-table" aria-label="World Series game history">
+          <thead>
+            <tr>
+              <th>GAME</th><th>VISITOR</th><th>R</th><th>HOME</th><th>R</th><th>WINNER</th><th>SERIES</th>
+            </tr>
+          </thead>
+          <tbody id="worldSeriesTableBody"></tbody>
+        </table>
+      </div>
+      <div class="world-series-empty" id="worldSeriesEmpty">NO COMPLETED GAMES YET.</div>
+      <div class="world-series-actions">
+        <button class="world-series-reset" id="resetWorldSeriesBtn" type="button">RESET WORLD SERIES</button>
+      </div>
+    </section>
+
     <div class="bottom-reset-wrap">
       <button class="bottom-reset-btn" id="bottomResetBtn">NEW GAME</button>
     </div>
@@ -3134,6 +3316,15 @@ header.hero{
       <button class="innings-choice" data-innings="6">6</button>
       <button class="innings-choice" data-innings="9">9</button>
     </div>
+
+    <div class="world-series-option">
+      <label for="worldSeriesModeToggle">
+        <input type="checkbox" id="worldSeriesModeToggle">
+        <span>WORLD SERIES MODE — BEST OF 7</span>
+      </label>
+      <div class="world-series-popup-status" id="worldSeriesPopupStatus" hidden></div>
+    </div>
+
     <button class="innings-cancel" id="inningsCancelBtn" type="button">CANCEL</button>
   </div>
 </div>
@@ -3177,6 +3368,7 @@ header.hero{
     </div>
 
     <div class="winner-banner" id="winnerBanner">HOME WINS!</div>
+    <div class="final-series-status" id="finalSeriesStatus" hidden></div>
 
     <div class="final-actions">
       <button class="final-button primary" id="newGameFinalBtn">NEW GAME</button>
@@ -3448,11 +3640,197 @@ header.hero{
     bases:[false,false,false],
     runs:{home:Array(9).fill(0),away:Array(9).fill(0)},
     hits:{home:0,away:0}, homeRuns:{home:0,away:0}, trapDoorStrikes:{home:0,away:0}, errors:{home:0,away:0},
-    history:[], log:[]
+    history:[], log:[],
+    worldSeriesGame:false,
+    worldSeriesGameNumber:0
   };
 
   const $=s=>document.querySelector(s);
   const $$=s=>[...document.querySelectorAll(s)];
+
+  const WORLD_SERIES_KEY='superStadiumWorldSeries';
+  let pendingWorldSeriesMode=false;
+  let creatingNewWorldSeries=false;
+
+  function loadWorldSeries(){
+    try{
+      const raw=localStorage.getItem(WORLD_SERIES_KEY);
+      if(!raw)return null;
+      const parsed=JSON.parse(raw);
+      if(!parsed || typeof parsed!=='object')return null;
+      parsed.games=Array.isArray(parsed.games)?parsed.games:[];
+      parsed.wins=parsed.wins&&typeof parsed.wins==='object'?parsed.wins:{away:0,home:0};
+      parsed.wins.away=Math.max(0,Number(parsed.wins.away)||0);
+      parsed.wins.home=Math.max(0,Number(parsed.wins.home)||0);
+      parsed.awayName=(parsed.awayName||'VISITOR').toString().toUpperCase();
+      parsed.homeName=(parsed.homeName||'HOME').toString().toUpperCase();
+      parsed.inningsToPlay=[1,3,6,9].includes(Number(parsed.inningsToPlay))?Number(parsed.inningsToPlay):9;
+      parsed.complete=Boolean(parsed.complete || parsed.wins.away>=4 || parsed.wins.home>=4);
+      parsed.active=!parsed.complete;
+      return parsed;
+    }catch(error){
+      console.warn('World Series save could not be loaded:',error);
+      return null;
+    }
+  }
+
+  function saveWorldSeries(series){
+    try{localStorage.setItem(WORLD_SERIES_KEY,JSON.stringify(series));}catch(error){console.warn('World Series save failed:',error);}
+  }
+
+  function createWorldSeries(awayName,homeName,innings){
+    const series={
+      version:1,
+      active:true,
+      complete:false,
+      awayName:(awayName||'VISITOR').toUpperCase(),
+      homeName:(homeName||'HOME').toUpperCase(),
+      inningsToPlay:9,
+      wins:{away:0,home:0},
+      games:[]
+    };
+    saveWorldSeries(series);
+    return series;
+  }
+
+  function seriesStandingText(series){
+    if(!series)return '';
+    const aw=series.wins.away||0, hw=series.wins.home||0;
+    if(series.complete){
+      const champ=aw>hw?series.awayName:series.homeName;
+      return `${champ} WINS THE WORLD SERIES ${Math.max(aw,hw)}–${Math.min(aw,hw)}`;
+    }
+    if(aw===hw)return aw===0?'SERIES TIED 0–0':`SERIES TIED ${aw}–${hw}`;
+    const leader=aw>hw?series.awayName:series.homeName;
+    return `${leader} LEADS SERIES ${Math.max(aw,hw)}–${Math.min(aw,hw)}`;
+  }
+
+  function updateWorldSeriesModeUI(){
+    const toggle=$('#worldSeriesModeToggle');
+    if(!toggle)return;
+
+    const enabled=Boolean(toggle.checked);
+    $$('.innings-choice').forEach(button=>{
+      button.hidden=enabled && Number(button.dataset.innings)!==9;
+    });
+
+    const status=$('#worldSeriesPopupStatus');
+    if(status){
+      if(enabled){
+        const series=loadWorldSeries();
+        status.textContent=(series && series.active && !series.complete)
+          ? seriesStandingText(series)
+          : 'SERIES TIED 0–0';
+        status.hidden=false;
+      }else{
+        status.hidden=true;
+      }
+    }
+  }
+
+  function renderWorldSeries(){
+    const panel=$('#worldSeriesPanel');
+    if(!panel)return;
+    const series=loadWorldSeries();
+    const toggle=$('#worldSeriesModeToggle');
+    const note=$('#worldSeriesModeNote');
+    const finalStatus=$('#finalSeriesStatus');
+
+    if(!series){
+      panel.hidden=true;
+      if(note)note.textContent='First team to 4 wins.';
+      if(finalStatus)finalStatus.hidden=true;
+      return;
+    }
+
+    panel.hidden=false;
+    const aw=series.wins.away||0, hw=series.wins.home||0;
+    $('#worldSeriesSummary').textContent=seriesStandingText(series);
+    $('#worldSeriesGameLabel').textContent=series.complete?'SERIES FINAL':`NEXT: GAME ${series.games.length+1}`;
+
+    const body=$('#worldSeriesTableBody');
+    const empty=$('#worldSeriesEmpty');
+    body.innerHTML='';
+    series.games.forEach(game=>{
+      const tr=document.createElement('tr');
+      [
+        `GAME ${game.game}`,
+        game.awayName,
+        game.awayScore,
+        game.homeName,
+        game.homeScore,
+        game.winnerName,
+        game.seriesAfter
+      ].forEach(value=>{
+        const td=document.createElement('td');
+        td.textContent=value;
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    empty.hidden=series.games.length>0;
+
+    if(toggle && series.active) toggle.checked=true;
+    if(note){
+      note.textContent=series.complete
+        ? `${seriesStandingText(series)}. Reset the World Series to start another series.`
+        : `${seriesStandingText(series)}. Game ${series.games.length+1} is next. History is saved on this device.`;
+    }
+    if(finalStatus && state.worldSeriesGame && state.gameOver){
+      finalStatus.textContent=seriesStandingText(series);
+      finalStatus.hidden=false;
+    }
+  }
+
+  function recordWorldSeriesGame(){
+    if(!state.worldSeriesGame || !state.gameOver)return null;
+    const series=loadWorldSeries();
+    if(!series)return null;
+    const gameNumber=Math.max(1,Number(state.worldSeriesGameNumber)||series.games.length+1);
+    const already=series.games.find(g=>Number(g.game)===gameNumber);
+    if(already)return series;
+
+    const awayScore=total('away'), homeScore=total('home');
+    if(awayScore===homeScore)return series;
+    const winnerKey=awayScore>homeScore?'away':'home';
+    series.wins[winnerKey]=(series.wins[winnerKey]||0)+1;
+    series.complete=series.wins[winnerKey]>=4;
+    series.active=!series.complete;
+    const winnerName=winnerKey==='away'?series.awayName:series.homeName;
+    const aw=series.wins.away||0, hw=series.wins.home||0;
+    const seriesAfter=series.complete
+      ? `${winnerName} WINS ${Math.max(aw,hw)}–${Math.min(aw,hw)}`
+      : aw===hw?`TIED ${aw}–${hw}`:`${aw>hw?series.awayName:series.homeName} ${Math.max(aw,hw)}–${Math.min(aw,hw)}`;
+
+    series.games.push({
+      game:gameNumber,
+      awayName:series.awayName,
+      homeName:series.homeName,
+      awayScore,
+      homeScore,
+      winner:winnerKey,
+      winnerName,
+      seriesAfter
+    });
+    saveWorldSeries(series);
+    renderWorldSeries();
+    return series;
+  }
+
+  function resetWorldSeries(){
+    if(!window.confirm('Reset the entire World Series history?'))return;
+    localStorage.removeItem(WORLD_SERIES_KEY);
+    pendingWorldSeriesMode=false;
+    creatingNewWorldSeries=false;
+    state.worldSeriesGame=false;
+    state.worldSeriesGameNumber=0;
+    const toggle=$('#worldSeriesModeToggle');
+    if(toggle)toggle.checked=false;
+    renderWorldSeries();
+    render();
+    toast('WORLD SERIES RESET');
+  }
+
 
   function battingTeam(){return state.half==='top'?'away':'home'}
   function gameIsLocked(){
@@ -3495,7 +3873,8 @@ header.hero{
       gameOver:state.gameOver,
       inning:state.inning,half:state.half,balls:state.balls,strikes:state.strikes,outs:state.outs,
       bases:[...state.bases],runs:{home:[...state.runs.home],away:[...state.runs.away]},
-      hits:{...state.hits},homeRuns:{...state.homeRuns},trapDoorStrikes:{...state.trapDoorStrikes},errors:{...state.errors},log:[...state.log]
+      hits:{...state.hits},homeRuns:{...state.homeRuns},trapDoorStrikes:{...state.trapDoorStrikes},errors:{...state.errors},log:[...state.log],
+      worldSeriesGame:state.worldSeriesGame,worldSeriesGameNumber:state.worldSeriesGameNumber
     }));
     if(state.history.length>100)state.history.shift();
   }
@@ -4140,6 +4519,7 @@ header.hero{
     $$('.base[data-base]').forEach((b,i)=>b.classList.toggle('occupied',state.bases[i]));
     $('#playLog').innerHTML=state.log.length?state.log.map(x=>`<div class="log-line">${x}</div>`).join(''):'<div class="log-line">Game ready.</div>';
 
+    renderWorldSeries();
     localStorage.setItem('superStadiumScorekeeper',JSON.stringify(state));
   }
 
@@ -4189,16 +4569,23 @@ header.hero{
   }
 
   function confirmTeamNames(){
-    playPlayBallSound();
+    if(!state.worldSeriesGame)playPlayBallSound();
     stopNewGameMusic();
     const away=($('#newAwayName').value.trim()||'VISITOR').toUpperCase();
     const home=($('#newHomeName').value.trim()||'HOME').toUpperCase();
     $('#awayName').value=away;
     $('#homeName').value=home;
+
+    if(state.worldSeriesGame && creatingNewWorldSeries){
+      createWorldSeries(away,home,state.inningsToPlay);
+      creatingNewWorldSeries=false;
+      state.worldSeriesGameNumber=1;
+    }
+
     closeTeamNameModal();
     render();
     showAtBatPopup();
-    toast(`${state.inningsToPlay}-INNING GAME READY`);
+    toast(state.worldSeriesGame?`WORLD SERIES GAME ${state.worldSeriesGameNumber} READY`:`${state.inningsToPlay}-INNING GAME READY`);
   }
 
   function showFinalResults(){
@@ -4223,6 +4610,18 @@ header.hero{
     }else{
       winner.textContent='THE GAME IS A TIE!';
       winner.classList.add('tie');
+    }
+
+    const series=recordWorldSeriesGame();
+    const finalSeriesStatus=$('#finalSeriesStatus');
+    const newGameButton=$('#newGameFinalBtn');
+    if(state.worldSeriesGame && series){
+      finalSeriesStatus.textContent=seriesStandingText(series);
+      finalSeriesStatus.hidden=false;
+      newGameButton.textContent=series.complete?'NEW GAME':'NEXT WORLD SERIES GAME';
+    }else{
+      finalSeriesStatus.hidden=true;
+      newGameButton.textContent='NEW GAME';
     }
 
     const modal=$('#finalModal');
@@ -4483,6 +4882,11 @@ header.hero{
 
   function openInningsModal(){
     const modal=$('#inningsModal');
+    const series=loadWorldSeries();
+    const toggle=$('#worldSeriesModeToggle');
+    if(toggle)toggle.checked=Boolean(series && series.active);
+    renderWorldSeries();
+    updateWorldSeriesModeUI();
     modal.classList.add('open');
     modal.setAttribute('aria-hidden','false');
   }
@@ -4500,9 +4904,26 @@ header.hero{
   }
 
   function startNewGame(innings){
-    const preservedAwayName=($('#awayName')?.value||'VISITOR').trim()||'VISITOR';
-    const preservedHomeName=($('#homeName')?.value||'HOME').trim()||'HOME';
-    state.inningsToPlay=innings;
+    const existingSeries=loadWorldSeries();
+    const useWorldSeries=Boolean(pendingWorldSeriesMode);
+    creatingNewWorldSeries=useWorldSeries && (!existingSeries || existingSeries.complete);
+
+    const preservedAwayName=useWorldSeries && existingSeries && !existingSeries.complete
+      ? existingSeries.awayName
+      :(($('#awayName')?.value||'VISITOR').trim()||'VISITOR');
+    const preservedHomeName=useWorldSeries && existingSeries && !existingSeries.complete
+      ? existingSeries.homeName
+      :(($('#homeName')?.value||'HOME').trim()||'HOME');
+
+    if(useWorldSeries && existingSeries && existingSeries.inningsToPlay!==9){
+      existingSeries.inningsToPlay=9;
+      saveWorldSeries(existingSeries);
+    }
+    state.inningsToPlay=useWorldSeries?9:innings;
+    state.worldSeriesGame=useWorldSeries;
+    state.worldSeriesGameNumber=useWorldSeries
+      ? (creatingNewWorldSeries?1:existingSeries.games.length+1)
+      :0;
     state.gameOver=false;
     state.inning=1;
     state.half='top';
@@ -4510,7 +4931,7 @@ header.hero{
     state.strikes=0;
     state.outs=0;
     state.bases=[false,false,false];
-    state.runs={home:Array(innings).fill(0),away:Array(innings).fill(0)};
+    state.runs={home:Array(state.inningsToPlay).fill(0),away:Array(state.inningsToPlay).fill(0)};
     state.hits={home:0,away:0};
     state.homeRuns={home:0,away:0};
     state.trapDoorStrikes={home:0,away:0};
@@ -4519,8 +4940,16 @@ header.hero{
     state.log=[];
     localStorage.removeItem('superStadiumScorekeeper');
     closeInningsModal();
+    $('#awayName').value=preservedAwayName.toUpperCase();
+    $('#homeName').value=preservedHomeName.toUpperCase();
     render();
-    openTeamNameModal(preservedAwayName,preservedHomeName);
+
+    if(useWorldSeries && !creatingNewWorldSeries){
+      showAtBatPopup();
+      toast(`WORLD SERIES GAME ${state.worldSeriesGameNumber} READY`);
+    }else{
+      openTeamNameModal(preservedAwayName,preservedHomeName);
+    }
   }
 
   // Unlock audio on the earliest direct mobile gesture. The click handler then
@@ -4563,15 +4992,26 @@ header.hero{
   $('#newGameFinalBtn').addEventListener('click',()=>{
     stopFinalMusic();
     hideFinalResults();
+    const series=loadWorldSeries();
+    if(state.worldSeriesGame && series && !series.complete){
+      pendingWorldSeriesMode=true;
+      startNewGame(series.inningsToPlay);
+      return;
+    }
+    pendingWorldSeriesMode=false;
     openInningsModal();
     startNewGameMusic();
   });
+  $('#worldSeriesModeToggle').addEventListener('change',updateWorldSeriesModeUI);
   $$('.innings-choice').forEach(button=>{
     button.addEventListener('click',()=>{
+      pendingWorldSeriesMode=Boolean($('#worldSeriesModeToggle')?.checked);
+      if(pendingWorldSeriesMode)playPlayBallSound();
       startNewGameMusic();
-      startNewGame(Number(button.dataset.innings));
+      startNewGame(pendingWorldSeriesMode?9:Number(button.dataset.innings));
     });
   });
+  $('#resetWorldSeriesBtn').addEventListener('click',resetWorldSeries);
   $('#inningsCancelBtn').addEventListener('click',closeInningsModal);
   $('#advance1Btn').addEventListener('click',()=>manualAdvance(1));
   $('#advance2Btn').addEventListener('click',()=>manualAdvance(2));
@@ -4596,7 +5036,7 @@ header.hero{
     if(!savedState || typeof savedState !== 'object') return;
 
     const savedInnings=Number(savedState.inningsToPlay);
-    state.inningsToPlay=[3,6,9].includes(savedInnings)?savedInnings:9;
+    state.inningsToPlay=[1,3,6,9].includes(savedInnings)?savedInnings:9;
     state.gameOver=Boolean(savedState.gameOver);
     state.inning = Math.max(1, Number(savedState.inning) || 1);
     state.half = savedState.half === 'bottom' ? 'bottom' : 'top';
@@ -4628,6 +5068,8 @@ header.hero{
 
     state.history = Array.isArray(savedState.history) ? savedState.history : [];
     state.log = Array.isArray(savedState.log) ? savedState.log : [];
+    state.worldSeriesGame=Boolean(savedState.worldSeriesGame);
+    state.worldSeriesGameNumber=Math.max(0,Number(savedState.worldSeriesGameNumber)||0);
   }
 
   const saved=localStorage.getItem('superStadiumScorekeeper');
