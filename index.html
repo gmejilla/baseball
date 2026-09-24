@@ -4914,6 +4914,7 @@ header.hero{
   }
 
   function startNewGame(innings){
+    stopNewGameMusic();
     const existingSeries=loadWorldSeries();
     const useWorldSeries=Boolean(pendingWorldSeriesMode);
     creatingNewWorldSeries=useWorldSeries && (!existingSeries || existingSeries.complete);
@@ -5037,7 +5038,6 @@ header.hero{
         if(seriesInProgress)playPlayBallSound();
       }
 
-      startNewGameMusic();
       startNewGame(pendingWorldSeriesMode?9:Number(button.dataset.innings));
     });
   });
