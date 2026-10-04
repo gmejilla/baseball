@@ -3101,6 +3101,109 @@ header.hero{
 }
 </style>
 
+
+<style id="derby-batter-up-styles">
+  #derbyStartModal .derby-start-actions{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:100% !important;
+    margin:24px 0 0 !important;
+    padding:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  #derbyStartModal .derby-batter-up-btn{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:min(300px, 90%) !important;
+    min-width:0 !important;
+    min-height:72px !important;
+    margin:0 auto !important;
+    padding:0 24px !important;
+    box-sizing:border-box !important;
+
+    /* Match the established raised arcade-button treatment */
+    border:5px solid #fff !important;
+    outline:3px solid #111 !important;
+    border-radius:12px !important;
+    background:linear-gradient(#58be39,#197b19) !important;
+    color:#fff !important;
+    box-shadow:0 7px 0 #111,var(--bevel) !important;
+
+    font-family:Arial,sans-serif !important;
+    font-size:30px !important;
+    font-weight:900 !important;
+    line-height:1 !important;
+    letter-spacing:1px !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+    text-shadow:2px 2px 0 #000 !important;
+
+    cursor:pointer !important;
+    touch-action:manipulation !important;
+    appearance:none !important;
+    -webkit-appearance:none !important;
+  }
+
+  #derbyStartModal .derby-batter-up-btn:active,
+  #derbyStartModal .derby-batter-up-btn.is-pressed{
+    transform:translateY(5px) !important;
+    filter:brightness(.90) !important;
+    box-shadow:0 2px 0 #111,inset 0 2px 5px rgba(0,0,0,.35) !important;
+  }
+
+  @media(max-width:480px){
+    #derbyStartModal .derby-batter-up-btn{
+      width:min(270px, 92%) !important;
+      min-height:66px !important;
+      padding:0 18px !important;
+      font-size:27px !important;
+    }
+  }
+</style>
+
+
+<style id="derby-times-up-styles">
+  #derbyTimesUpModal{
+    position:fixed;
+    inset:0;
+    z-index:13000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    box-sizing:border-box;
+    background:rgba(0,0,0,.78);
+    backdrop-filter:blur(3px);
+    opacity:1;
+    transition:opacity .4s ease;
+  }
+  #derbyTimesUpModal.open{display:flex;}
+  #derbyTimesUpModal.fade-out{opacity:0;}
+  #derbyTimesUpModal .derby-times-up-card{
+    width:min(440px,100%);
+    padding:32px 24px;
+    box-sizing:border-box;
+    text-align:center;
+    background:linear-gradient(#0b3e2a,#031910);
+    border:7px solid #ffe12e;
+    outline:5px solid #111;
+    border-radius:20px;
+    box-shadow:0 18px 0 rgba(0,0,0,.4),0 28px 50px rgba(0,0,0,.55);
+  }
+  #derbyTimesUpModal .derby-times-up-title{
+    color:#fff;
+    font-family:Arial Black,Impact,Arial,sans-serif;
+    font-size:clamp(42px,10vw,72px);
+    font-weight:900;
+    line-height:1;
+    letter-spacing:1px;
+    text-shadow:4px 4px 0 #000;
+  }
+</style>
+
 </head>
 <body>
 
@@ -3144,7 +3247,7 @@ header.hero{
           <th id="inningHeaders" colspan="9" style="padding:0;border:0">
             <div id="inningHeaderGrid" style="display:grid;grid-template-columns:repeat(9,1fr);height:100%"></div>
           </th>
-          <th>R</th><th>H</th><th>HR</th><th>TD</th>
+          <th id="runsHeader">R</th><th id="hitsHeader">H</th><th id="hrHeader">HR</th><th id="tdHeader">TD</th>
         </tr>
       </thead>
       <tbody>
@@ -3268,7 +3371,16 @@ header.hero{
       </div>
     </section>
 
-    <section class="playlog">
+    <section class="world-series-panel" id="derbyPanel" hidden>
+  <div class="world-series-header">
+    <div>
+      <div class="world-series-title">ARCADE MODE · HOME RUN DERBY</div>
+      <div class="world-series-subtitle" id="derbyBattingLabel">VISITOR BATTING</div>
+    </div>
+    <div class="world-series-title" id="derbyTimer">0:30</div>
+  </div>
+</section>
+<section class="playlog">
       <div class="playlog-title">PLAY BY PLAY</div>
       <div class="playlog-body" id="playLog"></div>
       <div class="autosave">SCORE SAVED AUTOMATICALLY</div>
@@ -3324,6 +3436,15 @@ header.hero{
       </label>
       <div class="world-series-popup-status" id="worldSeriesPopupStatus" hidden></div>
     </div>
+    <div class="world-series-option arcade-option">
+      <label for="arcadeModeToggle">
+        <input type="checkbox" id="arcadeModeToggle">
+        <span>ARCADE MODE</span>
+      </label>
+      <div id="arcadeModeChoices" hidden style="margin-top:10px;">
+        <button type="button" id="homeRunDerbyModeBtn" class="innings-choice" data-arcade="home-run-derby" style="width:100%;">HOME RUN DERBY</button>
+      </div>
+    </div>
 
     <button class="innings-cancel" id="inningsCancelBtn" type="button">CANCEL</button>
   </div>
@@ -3345,6 +3466,22 @@ header.hero{
       </div>
     </div>
     <button class="team-name-confirm" id="teamNameConfirmBtn" aria-label="Play Ball"><span class="play-ball-icon baseball" aria-hidden="true">⚾</span><span class="play-ball-text">PLAY BALL!</span><span class="play-ball-icon baseball" aria-hidden="true">⚾</span></button>
+  </div>
+</div>
+
+<div class="derby-times-up-modal" id="derbyTimesUpModal" aria-hidden="true">
+  <div class="derby-times-up-card" role="status" aria-live="assertive">
+    <div class="derby-times-up-title">TIME'S UP!</div>
+  </div>
+</div>
+
+<div class="innings-modal" id="derbyStartModal" aria-hidden="true">
+  <div class="innings-dialog" role="dialog" aria-modal="true" aria-labelledby="derbyStartTitle">
+    <div class="innings-modal-title" id="derbyStartTitle">VISITOR READY TO BAT?</div>
+    <div class="innings-modal-sub">HOME RUN DERBY · 30 SECONDS ON THE CLOCK</div>
+    <div class="derby-start-actions">
+      <button type="button" class="derby-batter-up-btn" id="derbyStartAtBatBtn">BATTER UP!</button>
+    </div>
   </div>
 </div>
 
@@ -3642,7 +3779,18 @@ header.hero{
     hits:{home:0,away:0}, homeRuns:{home:0,away:0}, trapDoorStrikes:{home:0,away:0}, errors:{home:0,away:0},
     history:[], log:[],
     worldSeriesGame:false,
-    worldSeriesGameNumber:0
+    worldSeriesGameNumber:0,
+arcadeMode:false,
+homeRunDerby:false,
+derbyTeam:'away',
+derbyTime:30,
+derbyHomeRuns:{away:0,home:0},
+derbyHits:{
+  away:{single:0,double:0,triple:0,hr:0},
+  home:{single:0,double:0,triple:0,hr:0}
+},
+derbyRoundOver:false,
+derbyWaitingToStart:true
   };
 
   const $=s=>document.querySelector(s);
@@ -3651,6 +3799,7 @@ header.hero{
   const WORLD_SERIES_KEY='superStadiumWorldSeries';
   let pendingWorldSeriesMode=false;
   let creatingNewWorldSeries=false;
+  let pendingHomeRunDerby=false;
 
   function loadWorldSeries(){
     try{
@@ -3726,6 +3875,211 @@ header.hero{
         status.hidden=true;
       }
     }
+  }
+
+  let derbyTimerHandle=null;
+  let derbyTimesUpTimer=null;
+  let derbyTimesUpFadeTimer=null;
+
+  function stopDerbyTimer(){
+    if(derbyTimerHandle){
+      clearInterval(derbyTimerHandle);
+      derbyTimerHandle=null;
+    }
+  }
+
+  function hideDerbyTimesUp(){
+    if(derbyTimesUpTimer){
+      clearTimeout(derbyTimesUpTimer);
+      derbyTimesUpTimer=null;
+    }
+    if(derbyTimesUpFadeTimer){
+      clearTimeout(derbyTimesUpFadeTimer);
+      derbyTimesUpFadeTimer=null;
+    }
+    const modal=$('#derbyTimesUpModal');
+    if(modal){
+      modal.classList.remove('open','fade-out');
+      modal.setAttribute('aria-hidden','true');
+    }
+  }
+
+  function showDerbyTimesUp(onComplete){
+    hideDerbyTimesUp();
+    const modal=$('#derbyTimesUpModal');
+    if(!modal){
+      if(typeof onComplete==='function')onComplete();
+      return;
+    }
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+
+    // Match inning-change behavior by playing one random baseball charge/fanfare.
+    if(typeof playRandomBaseballCharge==='function'){
+      playRandomBaseballCharge();
+    }
+
+    // Hold the message for 2.6 seconds, then fade for the final 0.4 seconds.
+    derbyTimesUpFadeTimer=setTimeout(()=>{
+      modal.classList.add('fade-out');
+    },2600);
+
+    derbyTimesUpTimer=setTimeout(()=>{
+      hideDerbyTimesUp();
+      if(typeof onComplete==='function')onComplete();
+    },3000);
+  }
+
+  function renderDerby(){
+    const panel=$('#derbyPanel');
+    if(!panel)return;
+    panel.hidden=!state.homeRunDerby;
+    if(!state.homeRunDerby)return;
+    const secs=Math.max(0,Math.ceil(state.derbyTime||0));
+    $('#derbyTimer').textContent=`0:${String(secs).padStart(2,'0')}`;
+    $('#derbyBattingLabel').textContent=`${teamName(state.derbyTeam)} BATTING`;
+    const startModal=$('#derbyStartModal');
+    const startBtn=$('#derbyStartAtBatBtn');
+    const startTitle=$('#derbyStartTitle');
+    const battingName=teamName(state.derbyTeam);
+
+    if(startBtn)startBtn.textContent='BATTER UP!';
+    if(startTitle)startTitle.textContent=`${battingName} READY TO BAT?`;
+
+    const shouldShowStart=Boolean(
+      state.homeRunDerby &&
+      state.derbyWaitingToStart &&
+      !state.derbyRoundOver &&
+      !state.gameOver
+    );
+
+    if(startModal){
+      startModal.classList.toggle('open',shouldShowStart);
+      startModal.setAttribute('aria-hidden',shouldShowStart?'false':'true');
+    }
+  }
+
+  function finishDerbyTurn(){
+    stopDerbyTimer();
+    state.derbyTime=0;
+    renderDerby();
+    if(state.derbyTeam==='away'){
+      showDerbyTimesUp(()=>{
+        if(!state.homeRunDerby || state.gameOver)return;
+        state.derbyTeam='home';
+        state.half='bottom';
+        state.derbyTime=30;
+        state.derbyRoundOver=false;
+        state.derbyWaitingToStart=true;
+        state.bases=[false,false,false];
+        render();
+        renderDerby();
+      });
+    }else{
+      state.derbyRoundOver=true;
+      state.gameOver=true;
+      renderDerby();
+
+      const a=state.derbyHomeRuns.away||0;
+      const h=state.derbyHomeRuns.home||0;
+      const awayName=teamName('away');
+      const homeName=teamName('home');
+
+      // Home Run Derby final score is based on pure HR totals, not runs scored.
+      $('#finalAwayName').textContent=awayName;
+      $('#finalHomeName').textContent=homeName;
+      $('#finalAwayScore').textContent=a;
+      $('#finalHomeScore').textContent=h;
+
+      const title=$('#finalTitle');
+      if(title)title.textContent='HOME RUN DERBY FINAL';
+
+      const winner=$('#winnerBanner');
+      if(winner){
+        winner.classList.remove('tie');
+        if(a===h){
+          winner.textContent=`HOME RUN DERBY TIED ${a}-${h}`;
+          winner.classList.add('tie');
+        }else if(a>h){
+          winner.textContent=`${awayName} WINS!`;
+        }else{
+          winner.textContent=`${homeName} WINS!`;
+        }
+      }
+
+      const finalSeriesStatus=$('#finalSeriesStatus');
+      if(finalSeriesStatus)finalSeriesStatus.hidden=true;
+
+      const newGameButton=$('#newGameFinalBtn');
+      if(newGameButton)newGameButton.textContent='NEW GAME';
+
+      playFinalMusic();
+      const modal=$('#finalModal');
+      if(modal){
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        modal.style.display='flex';
+        modal.style.visibility='visible';
+        modal.style.opacity='1';
+        modal.style.zIndex='10000';
+      }
+      launchFinalFireworks();
+    }
+  }
+
+  function startDerbyTimer(){
+    if(!state.homeRunDerby || state.derbyRoundOver || state.gameOver || !state.derbyWaitingToStart)return;
+    state.derbyWaitingToStart=false;
+    renderDerby();
+    const startModal=$('#derbyStartModal');
+    if(startModal){
+      startModal.classList.remove('open');
+      startModal.setAttribute('aria-hidden','true');
+    }
+    stopDerbyTimer();
+    let last=performance.now();
+    derbyTimerHandle=setInterval(()=>{
+      const now=performance.now();
+      state.derbyTime=Math.max(0,(state.derbyTime||0)-(now-last)/1000);
+      last=now;
+      renderDerby();
+      if(state.derbyTime<=0)finishDerbyTurn();
+    },100);
+  }
+
+  function addDerbyTime(seconds){
+    if(!state.homeRunDerby || state.derbyRoundOver || state.gameOver)return;
+    state.derbyTime=Math.max(0,(state.derbyTime||0)+seconds);
+    renderDerby();
+  }
+
+  function startHomeRunDerby(){
+    stopNewGameMusic();
+    stopDerbyTimer();
+    hideDerbyTimesUp();
+    state.arcadeMode=true;
+    state.homeRunDerby=true;
+    state.worldSeriesGame=false;
+    state.gameOver=false;
+    state.derbyTeam='away';
+    state.half='top';
+    state.inning=1;
+    state.derbyTime=30;
+    state.derbyHomeRuns={away:0,home:0};
+    state.derbyHits={
+      away:{single:0,double:0,triple:0,hr:0},
+      home:{single:0,double:0,triple:0,hr:0}
+    };
+    state.derbyRoundOver=false;
+    state.derbyWaitingToStart=true;
+    state.runs={away:[0],home:[0]};
+    state.hits={away:0,home:0};
+    state.bases=[false,false,false];
+    state.balls=0; state.strikes=0; state.outs=0;
+    closeInningsModal();
+    render();
+    renderDerby();
   }
 
   function renderWorldSeries(){
@@ -3814,6 +4168,7 @@ header.hero{
     });
     saveWorldSeries(series);
     renderWorldSeries();
+    renderDerby();
     return series;
   }
 
@@ -4171,6 +4526,95 @@ header.hero{
   }
 
   function hit(type){
+    if(state.homeRunDerby){
+      if(state.gameOver || state.derbyRoundOver || state.derbyWaitingToStart)return;
+
+      const bonus={single:3,double:4,triple:5,homeRun:10,hr:10}[type]||0;
+      const isHR=(type==='homeRun'||type==='hr');
+      const animationType=isHR?'hr':type;
+      const runnerAnimationStart=[...state.bases];
+
+      if(!state.derbyHits[state.derbyTeam]){
+        state.derbyHits[state.derbyTeam]={single:0,double:0,triple:0,hr:0};
+      }
+
+      let scored=0;
+
+      if(isHR){
+        // In Derby mode, every runner who crosses home on the HR counts
+        // toward the HR score, including the batter-runner.
+        scored=1+runnerAnimationStart.filter(Boolean).length;
+        state.bases=[false,false,false];
+        // HR totals count only the actual home-run hit, not runners driven in.
+        state.derbyHits[state.derbyTeam].hr+=1;
+        state.derbyHomeRuns[state.derbyTeam]=(state.derbyHomeRuns[state.derbyTeam]||0)+1;
+      }else{
+        const spaces=type==='single'?1:type==='double'?2:type==='triple'?3:0;
+        const next=[false,false,false];
+
+        for(let i=2;i>=0;i--){
+          if(!runnerAnimationStart[i])continue;
+          const target=i+spaces;
+          if(target>=3)scored++;
+          else next[target]=true;
+        }
+
+        const batterTarget=spaces-1;
+        if(batterTarget>=3)scored++;
+        else if(batterTarget>=0)next[batterTarget]=true;
+
+        state.bases=next;
+
+        if(type==='single')state.derbyHits[state.derbyTeam].single++;
+        if(type==='double')state.derbyHits[state.derbyTeam].double++;
+        if(type==='triple')state.derbyHits[state.derbyTeam].triple++;
+      }
+
+      // Keep the normal scoreboard's run total accurate in Home Run Derby.
+      // Defer cheer here so existing Derby celebration timing remains unchanged.
+      if(scored>0)addRuns(scored,true);
+
+      addDerbyTime(bonus);
+      playActionSound(animationType,isHR?scored:0);
+
+      const teamLabel=state.derbyTeam==='away'?'VISITOR':'HOME';
+      if(isHR){
+        logPlay(`${teamLabel} ${scored===1?'SOLO':scored+'-RUN'} HOME RUN · +${bonus} SEC · HR SCORE +1`);
+      }else{
+        logPlay(`${teamLabel} ${String(type).toUpperCase()} · +${bonus} SEC`);
+      }
+
+      beginRunnerTransition();
+
+      animateBaseRunners(runnerAnimationStart,animationType)
+        .catch(()=>{})
+        .finally(()=>{
+          render();
+          const field=document.querySelector('.field-wrap');
+          if(field){
+            field.querySelectorAll('.runner-motion-sprite').forEach(sprite=>sprite.remove());
+            field.classList.remove('runner-animation-active');
+          }
+
+          playSingleHitSound();
+          const derbyLedCompletion=showLedHitRibbon(animationType);
+
+          if(isHR){
+            // Wait until the Home Run LED ribbon animation has fully completed
+            // before playing the cheer.
+            Promise.resolve(derbyLedCompletion)
+              .catch(()=>{})
+              .then(()=>playCheerSound());
+          }
+
+          if(isHR && typeof launchFireworks==='function'){
+            launchFireworks(scored);
+          }
+        });
+
+      renderDerby();
+      return;
+    }
     if(gameIsLocked())return;
     saveHistory();
     const team=battingTeam();
@@ -4274,6 +4718,7 @@ header.hero{
   }
 
   function addOut(){
+    if(state.homeRunDerby)return;
     if(gameIsLocked())return;
     try{new Audio('out.mp3').play().catch(()=>{});}catch(error){};
     saveHistory();state.outs++;clearCount();logPlay('Out recorded.');
@@ -4346,6 +4791,7 @@ header.hero{
   }
 
   function addBall(){
+    if(state.homeRunDerby)return;
     if(gameIsLocked())return;
     saveHistory();
     state.balls++;
@@ -4357,6 +4803,7 @@ header.hero{
   }
 
   function addStrike(isTrapDoor=false){
+    if(state.homeRunDerby)return;
     if(gameIsLocked())return;
     saveHistory();
     if(isTrapDoor){
@@ -4428,8 +4875,28 @@ header.hero{
   }
 
   function buildInningHeaders(){
-    const count=displayedInnings();
     const headerGrid=$('#inningHeaderGrid');
+
+    if(state.homeRunDerby){
+      const labels=['1B','2B','3B','HR'];
+      headerGrid.style.gridTemplateColumns='repeat(4,1fr)';
+      headerGrid.innerHTML='';
+      labels.forEach((label,index)=>{
+        const cell=document.createElement('div');
+        cell.textContent=label;
+        cell.style.display='grid';
+        cell.style.placeItems='center';
+        cell.style.borderRight=index<labels.length-1?'2px solid #36443d':'0';
+        cell.style.height='46px';
+        headerGrid.appendChild(cell);
+      });
+      $('#inningHeaders').colSpan=4;
+      $('#awayInningsCell').colSpan=4;
+      $('#homeInningsCell').colSpan=4;
+      return;
+    }
+
+    const count=displayedInnings();
     headerGrid.style.gridTemplateColumns=`repeat(${count},1fr)`;
     headerGrid.innerHTML='';
     for(let i=1;i<=count;i++){
@@ -4448,9 +4915,26 @@ header.hero{
   }
 
   function buildInnings(team,containerId){
-    const count=displayedInnings();
     const wrap=$(containerId);
     wrap.innerHTML='';
+
+    if(state.homeRunDerby){
+      const counts=state.derbyHits?.[team] || {single:0,double:0,triple:0,hr:0};
+      const values=[counts.single||0,counts.double||0,counts.triple||0,counts.hr||0];
+      wrap.style.gridTemplateColumns='repeat(4,1fr)';
+      values.forEach((value,index)=>{
+        const cell=document.createElement('div');
+        cell.className='inning-input derby-hit-count';
+        cell.textContent=value;
+        cell.style.display='grid';
+        cell.style.placeItems='center';
+        cell.style.borderRight=index<values.length-1?'2px solid #777':'0';
+        wrap.appendChild(cell);
+      });
+      return;
+    }
+
+    const count=displayedInnings();
     wrap.style.gridTemplateColumns=`repeat(${count},1fr)`;
 
     for(let i=0;i<count;i++){
@@ -4472,7 +4956,9 @@ header.hero{
   function render(){
     const away=teamName('away'),home=teamName('home');
     $('#awayHeroName').textContent=away;$('#homeHeroName').textContent=home;
-    $('#awayTotal').textContent=total('away');$('#homeTotal').textContent=total('home');
+    const derbyBigScore=Boolean(state.homeRunDerby);
+    $('#awayTotal').textContent=derbyBigScore?(state.derbyHomeRuns.away||0):total('away');
+    $('#homeTotal').textContent=derbyBigScore?(state.derbyHomeRuns.home||0):total('home');
     $('#awayR').textContent=total('away');$('#homeR').textContent=total('home');
     $('#awayH').textContent=state.hits.away;$('#homeH').textContent=state.hits.home;
     $('#awayHR').textContent=state.homeRuns.away;$('#homeHR').textContent=state.homeRuns.home;
@@ -4487,6 +4973,20 @@ header.hero{
     buildInningHeaders();
     buildInnings('away','#awayInnings');
     buildInnings('home','#homeInnings');
+
+    const derbyScoreboard=Boolean(state.homeRunDerby);
+    ['#hitsHeader','#hrHeader','#tdHeader','#awayH','#awayHR','#awayTD','#homeH','#homeHR','#homeTD']
+      .forEach(selector=>{
+        const el=$(selector);
+        if(el)el.hidden=derbyScoreboard;
+      });
+
+    // Runs remain visible in Derby so the scoreboard shows actual runners
+    // who crossed home in addition to the 1B / 2B / 3B / HR Derby totals.
+    ['#runsHeader','#awayR','#homeR'].forEach(selector=>{
+      const el=$(selector);
+      if(el)el.hidden=false;
+    });
 
     $('#ballDots').innerHTML=[0,1,2].map(i=>`<span class="light ${i<state.balls?'on ball':''}"></span>`).join('');
     $('#strikeDots').innerHTML=[0,1].map(i=>`<span class="light ${i<state.strikes?'on strike':''}"></span>`).join('');
@@ -4585,6 +5085,14 @@ header.hero{
     const home=($('#newHomeName').value.trim()||'HOME').toUpperCase();
     $('#awayName').value=away;
     $('#homeName').value=home;
+
+    if(pendingHomeRunDerby){
+      pendingHomeRunDerby=false;
+      closeTeamNameModal();
+      startHomeRunDerby();
+      toast('HOME RUN DERBY READY');
+      return;
+    }
 
     if(state.worldSeriesGame && creatingNewWorldSeries){
       createWorldSeries(away,home,state.inningsToPlay);
@@ -5020,9 +5528,42 @@ header.hero{
     openInningsModal();
     startNewGameMusic();
   });
-  $('#worldSeriesModeToggle').addEventListener('change',updateWorldSeriesModeUI);
+  $('#worldSeriesModeToggle').addEventListener('change',event=>{
+    if(event.currentTarget.checked){
+      const arcade=$('#arcadeModeToggle');
+      if(arcade)arcade.checked=false;
+      const arcadeChoices=$('#arcadeModeChoices');
+      if(arcadeChoices)arcadeChoices.hidden=true;
+    }
+    updateWorldSeriesModeUI();
+  });
+  $('#arcadeModeToggle').addEventListener('change',event=>{
+    const on=Boolean(event.currentTarget.checked);
+    if(on){
+      const ws=$('#worldSeriesModeToggle');
+      if(ws)ws.checked=false;
+      updateWorldSeriesModeUI();
+    }
+    const choices=$('#arcadeModeChoices');
+    if(choices)choices.hidden=!on;
+    $$('.innings-choice').forEach(button=>{
+      if(!button.dataset.arcade)button.hidden=on;
+    });
+  });
+  $('#homeRunDerbyModeBtn').addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    pendingHomeRunDerby=true;
+    pendingWorldSeriesMode=false;
+    closeInningsModal();
+    openTeamNameModal($('#awayName')?.value||'VISITOR',$('#homeName')?.value||'HOME');
+  });
+  $('#derbyStartAtBatBtn').addEventListener('click',startDerbyTimer);
+
   $$('.innings-choice').forEach(button=>{
     button.addEventListener('click',()=>{
+      if(button.dataset.arcade)return;
+      pendingHomeRunDerby=false;
       pendingWorldSeriesMode=Boolean($('#worldSeriesModeToggle')?.checked);
 
       if(pendingWorldSeriesMode){
@@ -5735,6 +6276,46 @@ class BaseballLedRibbon extends HTMLElement {
   z-index:1 !important;
 }
 
+
+
+.derby-batter-up-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:min(320px,100%);
+  min-width:0;
+  min-height:72px;
+  margin:0 auto;
+  padding:0 20px;
+  box-sizing:border-box;
+  border:5px solid #fff;
+  outline:3px solid #111;
+  border-radius:12px;
+  background:linear-gradient(#58be39,#197b19);
+  color:#fff;
+  font:900 clamp(24px,5vw,36px)/1 Arial,sans-serif;
+  letter-spacing:1px;
+  text-align:center;
+  white-space:nowrap;
+  text-shadow:2px 2px 0 #000;
+  box-shadow:0 7px 0 #111,var(--bevel);
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.derby-batter-up-btn:active{
+  transform:translateY(4px);
+  filter:brightness(.92);
+  box-shadow:0 3px 0 #111,inset 0 2px 5px rgba(0,0,0,.35);
+}
+@media(max-width:480px){
+  .derby-batter-up-btn{
+    width:min(280px,100%);
+    min-height:68px;
+    padding:0 16px;
+    font-size:clamp(22px,8vw,32px);
+  }
+}
 </style>
       <div class="shell"><div class="board">
         <img class="batter" alt="">
